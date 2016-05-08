@@ -1,0 +1,8 @@
+{
+    "name": "alm/querymap",
+    "autoload": {
+        "psr-0": {
+            "QueryMap\\": "src"
+        }
+    }
+}
