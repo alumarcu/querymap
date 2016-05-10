@@ -1,7 +1,6 @@
 <?php
 namespace QueryMap\Tests\Doctrine\QueryMap;
 
-use QueryMap\Tests\Doctrine\QueryMap\DoctrineMockAdapter;
 use QueryMap\Contrib\Adapter\DoctrineAdapterConfigInterface;
 use QueryMap\Contrib\Map\CommonQueryMap;
 

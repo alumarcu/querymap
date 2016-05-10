@@ -1,8 +1,8 @@
 <?php
 namespace QueryMap\Contrib\Operator;
 
-use QueryMap\Component\Operator\Operator;
 use QueryMap\Component\Map\QueryMapAdapterInterface;
+use QueryMap\Component\Operator\Operator;
 
 class GreaterThanOperator extends Operator
 {

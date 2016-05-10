@@ -34,12 +34,12 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
 
         $resultingSql = static::sqlNormalize($creatureQueryMap->getQuerySql());
 
-        $this->assertStringMatchesFormat("%S(%s.age >= 16)%S", $resultingSql, '!gte');
-        $this->assertStringMatchesFormat("%S(%s.age <= 30)%S", $resultingSql, '!lte');
+        $this->assertStringMatchesFormat('%S(%s.age >= 16)%S', $resultingSql, '!gte');
+        $this->assertStringMatchesFormat('%S(%s.age <= 30)%S', $resultingSql, '!lte');
         $this->assertStringMatchesFormat("%S(%s.status = 'alive')%S", $resultingSql, '!eq');
         $this->assertStringMatchesFormat("%S(%s.species <> 'Human')%S", $resultingSql, '!neq');
-        $this->assertStringMatchesFormat("%S(%s.net_worth > 10000)%S", $resultingSql, '!gt');
-        $this->assertStringMatchesFormat("%S(%s.net_worth < 30000)%S", $resultingSql, '!lt');
+        $this->assertStringMatchesFormat('%S(%s.net_worth > 10000)%S', $resultingSql, '!gt');
+        $this->assertStringMatchesFormat('%S(%s.net_worth < 30000)%S', $resultingSql, '!lt');
     }
 
     public function testJoinOperatorsCanWorkAsFiltersWithoutJoiningAndTestOtherOperators()
@@ -161,12 +161,12 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
 
         $resultingSql = static::sqlNormalize($creatureQueryMap->getQuerySql());
 
-        $this->assertStringMatchesFormat("%SLEFT JOIN factions %s ON %s.faction_id = %s.id%S", $resultingSql, '!ljo');
-        $this->assertStringMatchesFormat("%SINNER JOIN planets %s ON %s.capital = %s.id%S", $resultingSql, '!ijo_1');
-        $this->assertStringMatchesFormat("%SINNER JOIN races %s ON %s.leading_race = %s.id%S", $resultingSql, '!ijo_2');
-        $this->assertStringMatchesFormat("%SINNER JOIN planets %s ON %s.home_planet = %s.id%S", $resultingSql, '!ijo_3');
+        $this->assertStringMatchesFormat('%SLEFT JOIN factions %s ON %s.faction_id = %s.id%S', $resultingSql, '!ljo');
+        $this->assertStringMatchesFormat('%SINNER JOIN planets %s ON %s.capital = %s.id%S', $resultingSql, '!ijo_1');
+        $this->assertStringMatchesFormat('%SINNER JOIN races %s ON %s.leading_race = %s.id%S', $resultingSql, '!ijo_2');
+        $this->assertStringMatchesFormat('%SINNER JOIN planets %s ON %s.home_planet = %s.id%S', $resultingSql, '!ijo_3');
         $this->assertStringMatchesFormat("%S(%s.name LIKE 'Gigel%')%S", $resultingSql, '!like');
-        $this->assertStringMatchesFormat("%S(%s.gun_count >= 500)%S", $resultingSql, '!ljo>gte');
+        $this->assertStringMatchesFormat('%S(%s.gun_count >= 500)%S', $resultingSql, '!ljo>gte');
         $this->assertStringMatchesFormat("%S(%s.name LIKE '%Chiajna%')%S", $resultingSql, '!ijo>like');
     }
 
@@ -229,7 +229,7 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         $resultingSql = static::sqlNormalize($creatureQueryMap->getQuerySql());
 
         $this->assertStringMatchesFormat("%S(%s.arrival_date BETWEEN '12-10-2014' AND '12-10-2015')%S", $resultingSql, '!method');
-        $this->assertStringMatchesFormat("%S(((%s.net_worth * 100) / %s.net_worth) > 10)%S", $resultingSql, '!method2');
+        $this->assertStringMatchesFormat('%S(((%s.net_worth * 100) / %s.net_worth) > 10)%S', $resultingSql, '!method2');
     }
 
     /**
@@ -264,8 +264,8 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
 
         $resultingSql = static::sqlNormalize($creatureQueryMap->getQuerySql());
 
-        $this->assertStringMatchesFormat("%SINNER JOIN creatures %s ON %s.creature_parent = %s.id%S", $resultingSql, '!collision_1');
-        $this->assertStringMatchesFormat("%SLEFT JOIN creatures %s ON %s.creature_parent = %s.id%S", $resultingSql, '!collision_2');
+        $this->assertStringMatchesFormat('%SINNER JOIN creatures %s ON %s.creature_parent = %s.id%S', $resultingSql, '!collision_1');
+        $this->assertStringMatchesFormat('%SLEFT JOIN creatures %s ON %s.creature_parent = %s.id%S', $resultingSql, '!collision_2');
         $this->assertStringMatchesFormat("%S(%s.name LIKE '%Wurtt')%S", $resultingSql, '!collision_3');
         $this->assertStringMatchesFormat("%S(%s.name LIKE '%Grandpa%')%S", $resultingSql, '!collision_4');
     }
@@ -304,7 +304,7 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
 
         $resultingSql = static::sqlNormalize($creatureQueryMap->getQuerySql());
 
-        $this->assertStringMatchesFormat("%Snet_worth BETWEEN 10000 AND 20000%S", $resultingSql, '!between1');
+        $this->assertStringMatchesFormat('%Snet_worth BETWEEN 10000 AND 20000%S', $resultingSql, '!between1');
         $this->assertStringMatchesFormat("%Sarrival_date BETWEEN '24-12-2015' AND '31-12-2015'%S", $resultingSql, '!between2');
     }
 
@@ -371,8 +371,8 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         $resultingSql = static::sqlNormalize($creatureQueryMap->getQuerySql());
 
         $this->assertStringMatchesFormat("%Sarrival_date <= '2020-12-24 23:59:59%S", $resultingSql, '!arrivedBefore');
-        $this->assertStringMatchesFormat("%Snet_worth >= 10000%S", $resultingSql, '!cashAtLeast');
-        $this->assertStringMatchesFormat("%S(((%s.net_worth * 100) / %s.net_worth) > 20)%S", $resultingSql, "!shareGt");
+        $this->assertStringMatchesFormat('%Snet_worth >= 10000%S', $resultingSql, '!cashAtLeast');
+        $this->assertStringMatchesFormat('%S(((%s.net_worth * 100) / %s.net_worth) > 20)%S', $resultingSql, '!shareGt');
     }
 
     /**

@@ -1,8 +1,8 @@
 <?php
 namespace QueryMap\Tests\Doctrine\QueryMap;
 
-use QueryMap\Contrib\Filter\MethodFilter;
 use QueryMap\Contrib\Annotation\DoctrineAnnotationMapping as QM;
+use QueryMap\Contrib\Filter\MethodFilter;
 
 class CreatureQueryMap extends DoctrineMockCommonQueryMap
 {
@@ -19,7 +19,7 @@ class CreatureQueryMap extends DoctrineMockCommonQueryMap
             $qm->getQuery()
                 ->andWhere(
                     sprintf(
-                        "(%s.%s BETWEEN :arrivalDateStart AND :arrivalDateEnd)",
+                        '(%s.%s BETWEEN :arrivalDateStart AND :arrivalDateEnd)',
                         $qm->alias,
                         'arrivalDate'
                     )

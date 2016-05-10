@@ -1,8 +1,8 @@
 <?php
 namespace QueryMap\Contrib\Adapter;
 
-use QueryMap\Contrib\Annotation\DoctrineAnnotationAdapter;
 use QueryMap\Component\Annotation\Annotation;
+use QueryMap\Contrib\Annotation\DoctrineAnnotationAdapter;
 use QueryMap\Contrib\Reader\DoctrineReader;
 
 /**

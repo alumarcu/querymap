@@ -1,8 +1,8 @@
 <?php
 namespace QueryMap\Tests\Doctrine\Entity;
 
-use QueryMap\Contrib\Annotation\DoctrineAnnotationMapping as QM;
 use Doctrine\ORM\Mapping as ORM;
+use QueryMap\Contrib\Annotation\DoctrineAnnotationMapping as QM;
 
 /**
  * @ORM\Entity(repositoryClass="\QueryMap\Tests\Doctrine\Repository\CreatureRepository")

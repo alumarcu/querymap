@@ -1,8 +1,8 @@
 <?php
 namespace QueryMap\Component\Map;
 
-use QueryMap\Component\Reader\Reader;
 use QueryMap\Component\Filter\FilterInterface;
+use QueryMap\Component\Reader\Reader;
 use QueryMap\Exception\QueryMapException;
 
 abstract class QueryMap implements QueryMapInterface, QueryMapAdapterInterface

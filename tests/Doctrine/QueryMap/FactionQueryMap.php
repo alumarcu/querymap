@@ -1,8 +1,8 @@
 <?php
 namespace QueryMap\Tests\Doctrine\QueryMap;
 
-use QueryMap\Contrib\Filter\MethodFilter;
 use QueryMap\Contrib\Annotation\DoctrineAnnotationMapping as QM;
+use QueryMap\Contrib\Filter\MethodFilter;
 
 class FactionQueryMap extends DoctrineMockCommonQueryMap
 {

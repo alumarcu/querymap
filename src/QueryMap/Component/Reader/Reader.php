@@ -1,9 +1,9 @@
 <?php
 namespace QueryMap\Component\Reader;
 
+use QueryMap\Component\Annotation\Annotation;
 use QueryMap\Component\Map\QueryMapAdapter;
 use QueryMap\Exception\QueryMapException;
-use QueryMap\Component\Annotation\Annotation;
 
 abstract class Reader
 {

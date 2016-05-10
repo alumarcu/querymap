@@ -1,6 +1,7 @@
 <?php
 namespace QueryMap\Contrib\Annotation;
 
+use \Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\JoinColumn;
@@ -10,7 +11,6 @@ use QueryMap\Component\Annotation\AnnotationAdapterInterface;
 use QueryMap\Component\Annotation\AnnotationInterface;
 use QueryMap\Contrib\Annotation\DoctrineAnnotationMapping\QueryMapAnnotationInterface;
 use QueryMap\Contrib\Reader\DoctrineReader;
-use \Doctrine\Common\Annotations\Reader;
 
 class DoctrineAnnotationAdapter implements AnnotationAdapterInterface
 {

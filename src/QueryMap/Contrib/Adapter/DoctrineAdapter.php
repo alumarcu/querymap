@@ -6,13 +6,13 @@ use Doctrine\ORM\QueryBuilder;
 use QueryMap\Component\Filter\FilterInterface;
 use QueryMap\Component\Map\QueryMapAdapter;
 use QueryMap\Component\Reader\Reader;
-use QueryMap\Contrib\Filter\JoinFilter;
 use QueryMap\Contrib\Filter\AttributeFilter;
+use QueryMap\Contrib\Filter\JoinFilter;
 use QueryMap\Contrib\Filter\MethodFilter;
+use QueryMap\Contrib\Operator\JoinInnerOperator;
+use QueryMap\Contrib\Operator\JoinLeftOperator;
 use QueryMap\Contrib\Reader\DoctrineReader;
 use QueryMap\Exception\QueryMapException;
-use QueryMap\Contrib\Operator\JoinLeftOperator;
-use QueryMap\Contrib\Operator\JoinInnerOperator;
 
 abstract class DoctrineAdapter extends QueryMapAdapter
 {
@@ -381,7 +381,7 @@ abstract class DoctrineAdapter extends QueryMapAdapter
         );
 
         $result = \SqlFormatter::highlight($result);
-        $result = str_replace(array("<pre ", "</pre>"), array("<span ", "</span>"), $result);
+        $result = str_replace(array('<pre ', '</pre>'), array('<span ', '</span>'), $result);
 
         return $result;
     }

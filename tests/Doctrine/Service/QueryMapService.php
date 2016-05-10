@@ -1,14 +1,13 @@
 <?php
 namespace QueryMap\Tests\Doctrine\Service;
 
-use Doctrine\Bundle\DoctrineBundle\Registry;
-use QueryMap\Contrib\Adapter\DoctrineAdapterConfig;
-use QueryMap\Contrib\Adapter\DoctrineAdapterConfigInterface;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Tools\Setup;
+use QueryMap\Contrib\Adapter\DoctrineAdapterConfig;
+use QueryMap\Contrib\Adapter\DoctrineAdapterConfigInterface;
 use QueryMap\Contrib\Annotation\DoctrineAnnotationAdapter;
 use QueryMap\Tests\Doctrine\QueryMap\DoctrineMockCommonQueryMap;
 

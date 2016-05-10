@@ -32,7 +32,7 @@ class BetweenOperator extends Operator
     {
         return function ($f, $v) use ($adapter) {
             if (is_numeric($v[0])) {
-                $format = "%s BETWEEN %s AND %s";
+                $format = '%s BETWEEN %s AND %s';
             } else {
                 $format = "%s BETWEEN '%s' AND '%s'";
             }

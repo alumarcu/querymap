@@ -1,8 +1,8 @@
 <?php
 namespace QueryMap\Contrib\Map;
 
-use QueryMap\Component\Map\QueryMap;
 use QueryMap\Component\Filter\FilterInterface;
+use QueryMap\Component\Map\QueryMap;
 use QueryMap\Component\MappingHelper\MappingHelperInterface;
 use QueryMap\Contrib\MappingHelper\CommonMappingHelper;
 

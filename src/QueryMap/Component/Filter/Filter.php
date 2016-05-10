@@ -1,8 +1,8 @@
 <?php
 namespace QueryMap\Component\Filter;
 
-use QueryMap\Exception\QueryMapException;
 use QueryMap\Component\Operator\OperatorInterface;
+use QueryMap\Exception\QueryMapException;
 
 abstract class Filter implements FilterInterface
 {

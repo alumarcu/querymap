@@ -1,11 +1,11 @@
 <?php
 namespace QueryMap\Contrib\Reader;
 
-use QueryMap\Component\Reader\Reader;
 use QueryMap\Component\Annotation\Annotation;
+use QueryMap\Component\Reader\Reader;
 use QueryMap\Contrib\Filter\AttributeFilter;
-use QueryMap\Contrib\Filter\MethodFilter;
 use QueryMap\Contrib\Filter\JoinFilter;
+use QueryMap\Contrib\Filter\MethodFilter;
 use QueryMap\Exception\QueryMapException;
 
 class DoctrineReader extends Reader
