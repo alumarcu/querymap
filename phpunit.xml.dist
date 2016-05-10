@@ -1,0 +1,28 @@
+<phpunit
+    bootstrap="tests/bootstrap-doctrine.php"
+    colors="true">
+    <testsuites>
+        <testsuite name="QueryMap Tests with DoctrineAdapter">
+            <directory>./tests/Doctrine/</directory>
+        </testsuite>
+    </testsuites>
+    <!--
+    <logging>
+        <log type="coverage-text" target="./docs/coverage_doctrine.txt"/>
+    </logging>
+    -->
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory>./src/</directory>
+            <exclude>
+            </exclude>
+        </whitelist>
+    </filter>
+    <php>
+        <!-- Configure these for your Doctrine tests to work -->
+        <const name="TEST_DB_CONNECTION_HOST" value="##test_db_host##"/>
+        <const name="TEST_DB_CONNECTION_DB_NAME" value="##test_db_host_name##"/>
+        <const name="TEST_DB_CONNECTION_USERNAME" value="##test_db_user##"/>
+        <const name="TEST_DB_CONNECTION_PASSWORD" value="##test_db_password##"/>
+    </php>
+</phpunit>

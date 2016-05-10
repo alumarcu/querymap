@@ -1,8 +1,35 @@
 {
     "name": "alm/querymap",
+    "type": "library",
+    "license": "MIT",
+    "description": "Query mechanism for Doctrine inspired by Django's QuerySet",
+    "authors": [
+        {
+            "name": "Alexandru Marcu",
+            "email": "alumarcu@gmail.com"
+        }
+    ],
     "autoload": {
         "psr-0": {
-            "QueryMap\\": "src"
+            "QueryMap\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "QueryMap\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+    },
+    "require-dev": {
+        "doctrine/orm": "^2.5",
+        "jdorn/sql-formatter": "^1.2.9"
+    },
+    "archive": {
+        "exclude": [
+            "!vendor",
+            "tests",
+            "*phpunit.xml"
+        ]
     }
 }
