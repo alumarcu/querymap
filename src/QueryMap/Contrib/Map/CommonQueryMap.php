@@ -4,12 +4,15 @@ namespace QueryMap\Contrib\Map;
 use QueryMap\Component\Filter\FilterInterface;
 use QueryMap\Component\Map\QueryMap;
 use QueryMap\Component\MappingHelper\MappingHelperInterface;
+use QueryMap\Contrib\Adapter\DoctrineAdapterConfigInterface;
 use QueryMap\Contrib\MappingHelper\CommonMappingHelper;
 
 abstract class CommonQueryMap extends QueryMap implements MappingHelperInterface
 {
     /** @var \QueryMap\Component\MappingHelper\MappingHelperInterface */
     protected $mappingHelper;
+
+    abstract public function createAdapter(DoctrineAdapterConfigInterface $configObject);
 
     /**
      * @inheritdoc

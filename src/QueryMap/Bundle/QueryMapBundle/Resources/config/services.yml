@@ -1,0 +1,6 @@
+services:
+    querymap.factory:
+        class: QueryMap\Bundle\QueryMapBundle\Service\QueryMapFactoryService
+        arguments:
+        - '@kernel'
+        - '@doctrine'

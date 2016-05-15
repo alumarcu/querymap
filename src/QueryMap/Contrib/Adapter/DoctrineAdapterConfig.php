@@ -132,6 +132,9 @@ trait DoctrineAdapterConfig
         }
 
         $qm->setMappedEntity($mappedEntity);
+
+        //TODO: Perhaps check that the trait is applied to a class implementing the interface?
+        /** @var $this DoctrineAdapterConfigInterface */
         $qm->createAdapter($this);
         $qm->createFilters();
 

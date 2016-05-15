@@ -22,6 +22,7 @@
     "require": {
     },
     "require-dev": {
+        "symfony/symfony": "3.0.*",
         "doctrine/orm": "^2.5",
         "jdorn/sql-formatter": "^1.2.9"
     },
