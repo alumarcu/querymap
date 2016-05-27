@@ -3,6 +3,7 @@ namespace QueryMap\Tests\Doctrine\Service;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
+use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Tools\Setup;
@@ -42,9 +43,9 @@ class QueryMapService implements DoctrineAdapterConfigInterface
 
         $paths = array(QM_TESTS_PATH . 'Doctrine/Entity');
         $isDevMode = false;
-        $config = Setup::createConfiguration($isDevMode);
+        $config = Setup::createConfiguration($isDevMode, sys_get_temp_dir(), new ArrayCache());
         $driver = new AnnotationDriver(new AnnotationReader(), $paths);
-        // registering no-op annotation autoloader - allow all annotations by default
+        //registering no-op annotation autoloader - allow all annotations by default
         AnnotationRegistry::registerLoader('class_exists');
         $config->setMetadataDriverImpl($driver);
 
