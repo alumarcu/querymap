@@ -13,6 +13,7 @@ class DoctrineReader extends Reader
     const WORD_DOCTRINE_JOIN_COLUMN = 'JoinColumn';
     const WORD_DOCTRINE_MANY_TO_ONE = 'ManyToOne';
     const WORD_DOCTRINE_ONE_TO_ONE = 'OneToOne';
+    const WORD_DOCTRINE_COLUMN = 'Column';
     const WORD_DOCTRINE_TARGET_ENTITY = 'targetEntity';
     const WORD_CLASS_MAP = 'Map';
     const WORD_CLASS_MAP_NAME = 'className';
@@ -44,10 +45,6 @@ class DoctrineReader extends Reader
 
     private function isValidAnnotationOnAttributes($name, Annotation $annotation)
     {
-        if (!$annotation->has($this->word(static::WORD_FILTER))) {
-            return false;
-        }
-
         if (!$annotation->has($this->word(static::WORD_COLUMN)) &&
             !$annotation->has($this->word(static::WORD_DOCTRINE_JOIN_COLUMN))) {
             return false;

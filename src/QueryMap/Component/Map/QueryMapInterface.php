@@ -14,8 +14,6 @@ interface QueryMapInterface
 
     /**
      * Applies the added set of filters to the QueryMap and returns a query object
-     *
-     * @return \Doctrine\ORM\QueryBuilder|Zend_Db_Select
      */
     public function make();
 

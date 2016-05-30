@@ -7,8 +7,8 @@ use QueryMap\Component\Map\QueryMapInterface;
 class AttributeFilter extends Filter
 {
     /**
-     * Name used when the query is formed with either DQL or Zend
-     * (i.e. in Zend is the name of the column, DQL uses the name of the attribute)
+     * Name used when the query is formed with DQL
+     *
      * @var string
      */
     protected $column;

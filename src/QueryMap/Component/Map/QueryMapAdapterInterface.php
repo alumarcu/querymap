@@ -20,7 +20,6 @@ interface QueryMapAdapterInterface
 
     /**
      * Return the framework specific query object
-     * (i.e. Zend_Db_Select or Doctrine QueryBuilder)
      *
      * @return mixed
      */
@@ -28,7 +27,6 @@ interface QueryMapAdapterInterface
 
     /**
      * Initialize the framework specific query object
-     * (i.e. Zend_Db_Select or Doctrine QueryBuilder)
      *
      * @return mixed|null
      */

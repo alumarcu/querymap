@@ -55,7 +55,7 @@ abstract class QueryMapAdapter implements QueryMapAdapterInterface
     }
 
     /**
-     * @return \Doctrine\ORM\QueryBuilder|Zend_Db_Select
+     * @return \Doctrine\ORM\QueryBuilder
      */
     public function getQuery()
     {
