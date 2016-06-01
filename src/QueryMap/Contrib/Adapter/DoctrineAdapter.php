@@ -19,7 +19,7 @@ abstract class DoctrineAdapter extends QueryMapAdapter
     /** @var \Doctrine\ORM\QueryBuilder */
     protected $query;
 
-    /** @var \QueryMap\Contrib\Adapter\DoctrineAdapterConfigInterface */
+    /** @var \QueryMap\Contrib\Service\QueryMapFactoryInterface */
     protected $configObject;
 
     /** @var \Doctrine\ORM\EntityRepository */

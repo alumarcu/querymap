@@ -8,7 +8,7 @@ use QueryMap\Tests\Doctrine\Service\QueryMapService;
 
 class CreatureTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var \QueryMap\Contrib\Adapter\DoctrineAdapterConfig */
+    /** @var \QueryMap\Contrib\Service\QueryMapFactoryInterface */
     protected $service;
 
     protected function setUp()

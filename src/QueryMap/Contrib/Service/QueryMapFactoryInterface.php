@@ -1,7 +1,7 @@
 <?php
-namespace QueryMap\Contrib\Adapter;
+namespace QueryMap\Contrib\Service;
 
-interface DoctrineAdapterConfigInterface
+interface QueryMapFactoryInterface
 {
     /**
      * Factory method for creating a query map with a given connection
