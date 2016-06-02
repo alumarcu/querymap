@@ -1,25 +1,11 @@
 <?php
-namespace QueryMap\Tests\Doctrine\Service;
+namespace QueryMap\Contrib\Service;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\AnnotationRegistry;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-use Doctrine\ORM\Tools\Setup;
 use QueryMap\Component\Annotation\Annotation;
 use QueryMap\Contrib\Reader\DoctrineReader;
-use QueryMap\Contrib\Service\QueryMapFactoryInterface;
-use QueryMap\Contrib\Annotation\DoctrineAnnotationAdapter;
-use QueryMap\Tests\Doctrine\QueryMap\DoctrineMockCommonQueryMap;
 
-class QueryMapService implements QueryMapFactoryInterface
+abstract class QueryMapFactory
 {
-    /** @var \Doctrine\ORM\EntityManager */
-    protected $em;
-
-    protected static $annotationAdapter;
-
     /**
      * The class of the mapped entity for which a query map was last created
      * @var string
@@ -46,58 +32,26 @@ class QueryMapService implements QueryMapFactoryInterface
      */
     protected $connectionName = null;
 
-    public function __construct()
-    {
-        $this->em = $this->createEntityManager();
-    }
+    /**
+     * Returns a generic querymap when no other is defined
+     *
+     * @param $alias
+     * @return \QueryMap\Contrib\Map\CommonQueryMap
+     */
+    abstract public function getGenericQueryMap($alias);
 
-    public function getEntityManager($connection = null)
-    {
-        return $this->em;
-    }
+    /**
+     * @param string|null $connection
+     * @return \Doctrine\Common\Persistence\ObjectManager|object
+     */
+    abstract public function getEntityManager($connection = null);
 
-    protected function createEntityManager()
-    {
-        $connectionParams = array(
-            'driver' => 'pdo_mysql',
-            'host' => TEST_DB_CONNECTION_HOST,
-            'dbname' => TEST_DB_CONNECTION_DB_NAME,
-            'user' => TEST_DB_CONNECTION_USERNAME,
-            'password' => TEST_DB_CONNECTION_PASSWORD
-        );
-
-        $paths = array(QM_TESTS_PATH . 'Doctrine/Entity');
-        $isDevMode = false;
-        $config = Setup::createConfiguration($isDevMode, sys_get_temp_dir(), new ArrayCache());
-        $driver = new AnnotationDriver(new AnnotationReader(), $paths);
-        //registering no-op annotation autoloader - allow all annotations by default
-        AnnotationRegistry::registerLoader('class_exists');
-        $config->setMetadataDriverImpl($driver);
-
-        return EntityManager::create($connectionParams, $config);
-    }
-
-    public function getCacheDir()
-    {
-        return null;
-    }
-
-    public function getAnnotationAdapter()
-    {
-        if (empty(static::$annotationAdapter)) {
-            $annotationReader = new AnnotationReader();
-
-            $adapter = new DoctrineAnnotationAdapter($annotationReader);
-            static::$annotationAdapter = $adapter;
-        }
-
-        return static::$annotationAdapter;
-    }
-
-    public function getGenericQueryMap($alias)
-    {
-        return new DoctrineMockCommonQueryMap($alias);
-    }
+    /**
+     * Returns the annotation adapter
+     *
+     * @return \QueryMap\Component\Annotation\AnnotationAdapterInterface
+     */
+    abstract public function getAnnotationAdapter();
 
     /**
      * @inheritdoc
@@ -162,20 +116,12 @@ class QueryMapService implements QueryMapFactoryInterface
     {
         // Make sure the alias is unique in subQueryMaps
         $this->currentAlias = $alias;
-
         $this->currentMappedEntityClass = $entityName;
-
-        /** @var DoctrineAnnotationAdapter $annotationAdapter */
-        $annotationAdapter = $this->getAnnotationAdapter();
 
         $mappedEntity = new $entityName();
 
-        $reflectionClass = new \ReflectionClass($mappedEntity);
+        $className = $this->getQueryMapClassNameForEntity($entityName);
 
-        $annotation = new Annotation($annotationAdapter);
-        $annotation->create($reflectionClass);
-
-        $className = $annotation->get(DoctrineReader::WORD_CLASS_MAP, DoctrineReader::WORD_CLASS_MAP_NAME);
         // Return the query map specified in the entity or a generic one
         if (!empty($className) && class_exists($className)) {
             $qm = new $className($alias);
@@ -191,6 +137,22 @@ class QueryMapService implements QueryMapFactoryInterface
         $qm->createFilters();
 
         return $qm;
+    }
+
+    protected function getQueryMapClassNameForEntity($entity)
+    {
+        /** @var \QueryMap\Contrib\Annotation\DoctrineAnnotationAdapter $annotationAdapter */
+        $annotationAdapter = $this->getAnnotationAdapter();
+
+        $reflectionClass = new \ReflectionClass($entity);
+
+        //Retrieve querymap class name from annotation
+        $annotation = new Annotation($annotationAdapter);
+        $annotation->create($reflectionClass);
+
+        $className = $annotation->get(DoctrineReader::WORD_CLASS_MAP, DoctrineReader::WORD_CLASS_MAP_NAME);
+
+        return $className;
     }
 
     /**

@@ -20,9 +20,9 @@
     </filter>
     <php>
         <!-- Configure these for your Doctrine tests to work -->
-        <const name="TEST_DB_CONNECTION_HOST" value="##test_db_host##"/>
-        <const name="TEST_DB_CONNECTION_DB_NAME" value="##test_db_host_name##"/>
-        <const name="TEST_DB_CONNECTION_USERNAME" value="##test_db_user##"/>
-        <const name="TEST_DB_CONNECTION_PASSWORD" value="##test_db_password##"/>
+        <const name="TEST_DB_CONNECTION_HOST" value=""/>
+        <const name="TEST_DB_CONNECTION_DB_NAME" value=""/>
+        <const name="TEST_DB_CONNECTION_USERNAME" value=""/>
+        <const name="TEST_DB_CONNECTION_PASSWORD" value=""/>
     </php>
 </phpunit>

@@ -1,7 +1,7 @@
 <?php
 namespace QueryMap\Contrib\Annotation;
 
-use \Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\JoinColumn;

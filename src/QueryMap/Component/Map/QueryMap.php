@@ -37,7 +37,6 @@ abstract class QueryMap implements QueryMapInterface, QueryMapAdapterInterface
     {
         $this->alias = $alias;
         $this->configure();
-        $this->createFilters();
     }
 
     /**

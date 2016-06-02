@@ -7,14 +7,6 @@ use QueryMap\Contrib\Map\CommonQueryMap;
 
 class DoctrineCommonQueryMap extends CommonQueryMap
 {
-    public function __construct($alias)
-    {
-        //TODO: Reuse constructor from parent
-        $this->alias = $alias;
-        $this->configure();
-        // createFilters() called outside constructor
-    }
-
     /**
      * Creates the adapter given an object with correct configuration.
      *

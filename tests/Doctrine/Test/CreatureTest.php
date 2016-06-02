@@ -4,17 +4,17 @@ namespace QueryMap\Tests\Doctrine\Test;
 use QueryMap\Contrib\MappingHelper\CommonMappingHelper;
 use QueryMap\Tests\Doctrine\Entity\Creature;
 use QueryMap\Tests\Doctrine\Entity\Race;
-use QueryMap\Tests\Doctrine\Service\QueryMapService;
+use QueryMap\Tests\Doctrine\Service\QueryMapFactoryMockService;
 
 class CreatureTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var \QueryMap\Contrib\Service\QueryMapFactoryInterface */
+    /** @var \QueryMap\Contrib\Service\QueryMapFactory */
     protected $service;
 
     protected function setUp()
     {
         parent::setUp();
-        $this->service = new QueryMapService();
+        $this->service = new QueryMapFactoryMockService();
     }
 
     public function testBasicOperatorsWork()
