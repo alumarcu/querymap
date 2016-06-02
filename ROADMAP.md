@@ -1,5 +1,13 @@
 ROADMAP
 =======
+* Short Term:
+    - Check use statements and use individual components instead of entire symfony in composer.json
+    - Fix unit tests and remove dependency to dumpSql/jdorn formatter
+    - Simplified use, without top level add/fresh/make
+        - a) make convenience methods that aggregate these
+        - b) these should be correctly named and allow the ability to work with only one call (e.g. $qm->filter([...]))
+    - Run php code fixer and include heading in all files
+
 * Short-Mid Term:
     - Remove dependency on SqlFormatter and remove the dumpSql method
     - Allow dynamically passing actions and validations to the CommonMappingHelper. Add methods like includeValidation($name, $callback).
