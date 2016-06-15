@@ -1,8 +1,26 @@
 <?php
+
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Alexandru Marcu <alumarcu@gmail.com>/DMS Team @ eMAG IT Research
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in the
+ * Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace QueryMap\Contrib\Adapter;
 
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\QueryBuilder;
 use QueryMap\Component\Filter\FilterInterface;
 use QueryMap\Component\Map\QueryMap;
 use QueryMap\Component\Map\QueryMapAdapter;
@@ -30,9 +48,10 @@ abstract class DoctrineAdapter extends QueryMapAdapter
      * If methods to load/save from cache are not otherwise customized
      * this will be an array cache. It is then assumed cache operations
      * are managed somewhere else.
+     *
      * @var array
      */
-    protected $tmpCache = array();
+    protected $tmpCache = [];
 
     public function __construct($configObject)
     {
@@ -48,19 +67,19 @@ abstract class DoctrineAdapter extends QueryMapAdapter
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function addToQuery(FilterInterface $filter)
     {
         switch (true) {
-            case ($filter instanceof JoinFilter && $filter->isValid()):
+            case $filter instanceof JoinFilter && $filter->isValid():
                 $joinAlias = $filter->getAs();
 
                 if (empty($joinAlias)) {
                     $joinAlias = $this->configObject->getUniqueAlias(substr($filter->getName(), 0, 2));
                 }
 
-                $this->joinWith($filter->getOperator(), array($joinAlias, $filter->getName()));
+                $this->joinWith($filter->getOperator(), [$joinAlias, $filter->getName()]);
                 $filterValue = $filter->getValue();
 
                 if (!empty($filterValue) && is_array($filterValue) && $filter->getQueryMap()) {
@@ -83,7 +102,6 @@ abstract class DoctrineAdapter extends QueryMapAdapter
 
                     $query = $subQueryMap->getQuery();
 
-
                     /** @var \Doctrine\ORM\QueryBuilder $query */
                     $query = $subQueryMap
                         ->setQuery($this->getQuery())
@@ -99,17 +117,17 @@ abstract class DoctrineAdapter extends QueryMapAdapter
                     );
                 }
                 break;
-            case ($filter instanceof AttributeFilter):
+            case $filter instanceof AttributeFilter:
                 $this->getQuery()->andWhere($this->condition($filter));
                 break;
-            case ($filter instanceof MethodFilter):
+            case $filter instanceof MethodFilter:
                 $filter->addToQuery();
                 break;
         }
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function createQuery()
     {
@@ -117,9 +135,11 @@ abstract class DoctrineAdapter extends QueryMapAdapter
     }
 
     /**
-     * Enables external access to the aliasing logic
-     * @param   string $word
-     * @return  string
+     * Enables external access to the aliasing logic.
+     *
+     * @param string $word
+     *
+     * @return string
      */
     public static function getWordAlias($word)
     {
@@ -132,7 +152,7 @@ abstract class DoctrineAdapter extends QueryMapAdapter
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getWord($word)
     {
@@ -140,7 +160,7 @@ abstract class DoctrineAdapter extends QueryMapAdapter
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function condition(FilterInterface $filter)
     {
@@ -161,7 +181,7 @@ abstract class DoctrineAdapter extends QueryMapAdapter
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function loadFromCache($key)
     {
@@ -169,11 +189,11 @@ abstract class DoctrineAdapter extends QueryMapAdapter
             return $this->tmpCache[$key];
         }
 
-        return null;
+        return;
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function saveToCache($key, $value)
     {
@@ -183,7 +203,7 @@ abstract class DoctrineAdapter extends QueryMapAdapter
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getFilterReader()
     {
@@ -195,25 +215,25 @@ abstract class DoctrineAdapter extends QueryMapAdapter
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function joinWith($operator, $name)
     {
         $joinAlias = $name[0];
-        $propName = $this->getAlias() . '.' . $name[1];
+        $propName = $this->getAlias().'.'.$name[1];
 
         switch (true) {
-            case ($operator instanceof JoinLeftOperator):
+            case $operator instanceof JoinLeftOperator:
                 $this->getQuery()->leftJoin($propName, $joinAlias);
                 break;
-            case ($operator instanceof JoinInnerOperator):
+            case $operator instanceof JoinInnerOperator:
                 $this->getQuery()->innerJoin($propName, $joinAlias);
                 break;
         }
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function prepare($queryPart, array $data)
     {
@@ -236,7 +256,8 @@ abstract class DoctrineAdapter extends QueryMapAdapter
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
+     *
      * @return \QueryMap\Contrib\Annotation\DoctrineAnnotationAdapter
      */
     public function getAnnotationAdapter()
@@ -246,9 +267,10 @@ abstract class DoctrineAdapter extends QueryMapAdapter
 
     /**
      * Doctrine\DBAL\Connection quotes everything without considering the type;
-     * this is only to call the quote method only for strings
+     * this is only to call the quote method only for strings.
      *
-     * @param  mixed   $value
+     * @param mixed $value
+     *
      * @return mixed
      */
     protected function quote($value)

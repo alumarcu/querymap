@@ -1,4 +1,24 @@
 <?php
+
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Alexandru Marcu <alumarcu@gmail.com>/DMS Team @ eMAG IT Research
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in the
+ * Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace QueryMap\Component\Map;
 
 use QueryMap\Component\Filter\FilterInterface;
@@ -13,10 +33,10 @@ abstract class QueryMap implements QueryMapInterface, QueryMapAdapterInterface
     const REUSE_ALL = 3;
 
     /** @var array|\QueryMap\Component\Operator\OperatorInterface[] */
-    protected $registeredOperators = array();
+    protected $registeredOperators = [];
 
     /** @var array|\QueryMap\Component\Filter\FilterInterface[] */
-    protected $filterStore = array();
+    protected $filterStore = [];
 
     /** @var \QueryMap\Component\Map\QueryMapAdapter */
     protected $adapter;
@@ -28,13 +48,13 @@ abstract class QueryMap implements QueryMapInterface, QueryMapAdapterInterface
     protected $alias;
 
     /** @var array */
-    protected $filters = array();
+    protected $filters = [];
 
     /** @var array|\QueryMap\Component\Operator\OperatorInterface[] */
-    static protected $operatorInst;
+    protected static $operatorInst;
 
     /**
-     * Register operators and provide extra setup for the query map
+     * Register operators and provide extra setup for the query map.
      */
     abstract protected function configure();
 
@@ -45,11 +65,12 @@ abstract class QueryMap implements QueryMapInterface, QueryMapAdapterInterface
     }
 
     /**
-     * Add a set of filters to the QueryMap buffer
+     * Add a set of filters to the QueryMap buffer.
      *
-     * @param  array  $filters    A key-value array with filters. When a join filter
-     *                            is given its value can be another array of filters
-     * @param  int    $reuse      What should be reused QueryMap::REUSE_* [NONE, FILTERS, OBJECT, ALL]
+     * @param array $filters A key-value array with filters. When a join filter
+     *                       is given its value can be another array of filters
+     * @param int   $reuse   What should be reused QueryMap::REUSE_* [NONE, FILTERS, OBJECT, ALL]
+     *
      * @return \Doctrine\ORM\QueryBuilder
      */
     public function query(array $filters, $reuse = self::REUSE_NONE)
@@ -68,7 +89,8 @@ abstract class QueryMap implements QueryMapInterface, QueryMapAdapterInterface
     }
 
     /**
-     * Loads the filters from class annotations
+     * Loads the filters from class annotations.
+     *
      * @throws \QueryMap\Exception\QueryMapException
      */
     public function createFilters()
@@ -104,7 +126,8 @@ abstract class QueryMap implements QueryMapInterface, QueryMapAdapterInterface
     }
 
     /**
-     * Known filters are added to the engine specific concrete query object
+     * Known filters are added to the engine specific concrete query object.
+     *
      * @return \Doctrine\ORM\QueryBuilder
      */
     protected function compile()
@@ -146,9 +169,10 @@ abstract class QueryMap implements QueryMapInterface, QueryMapAdapterInterface
     }
 
     /**
-     * Retrieve a filter from memory
+     * Retrieve a filter from memory.
      *
      * @param $filterKey
+     *
      * @return FilterInterface
      */
     public function getFilter($filterKey)
@@ -162,6 +186,7 @@ abstract class QueryMap implements QueryMapInterface, QueryMapAdapterInterface
 
     /**
      * @see \QueryMap\Component\Map\QueryMapAdapterInterface::addToQuery
+     *
      * @param FilterInterface $filter
      */
     public function addToQuery(FilterInterface $filter)
@@ -170,7 +195,7 @@ abstract class QueryMap implements QueryMapInterface, QueryMapAdapterInterface
     }
 
     /**
-     * Sets the mapped entity
+     * Sets the mapped entity.
      *
      * @param $me
      */
@@ -204,13 +229,14 @@ abstract class QueryMap implements QueryMapInterface, QueryMapAdapterInterface
     }
 
     /**
-     * @param   string    $operatorName Namespace and name of the operator class
-     * @return  QueryMap
+     * @param string $operatorName Namespace and name of the operator class
+     *
+     * @return QueryMap
      */
     protected function registerOperator($operatorName)
     {
         if (!isset(self::$operatorInst[$operatorName])) {
-            /** @var \QueryMap\Component\Operator\OperatorInterface $instance */
+            /* @var \QueryMap\Component\Operator\OperatorInterface $instance */
             self::$operatorInst[$operatorName] = new $operatorName();
         }
 

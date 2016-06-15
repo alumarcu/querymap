@@ -1,4 +1,24 @@
 <?php
+
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Alexandru Marcu <alumarcu@gmail.com>/DMS Team @ eMAG IT Research
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in the
+ * Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace QueryMap\Tests\Doctrine\Test;
 
 use QueryMap\Contrib\MappingHelper\CommonMappingHelper;
@@ -28,7 +48,7 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
             'species__neq' => 'Human',
             'status' => 'alive',
             'netWorth__gt' => 10000,
-            'net_worth__lt' => 30000 // test: alias from column field
+            'net_worth__lt' => 30000, // test: alias from column field
         ]);
 
         $dql = $query->getDQL();
@@ -50,11 +70,11 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         /** @var \QueryMap\Component\Map\QueryMap $creatureQueryMap */
         $creatureQueryMap = $this->service->create(Creature::class, 'cr');
         $query = $creatureQueryMap->query([
-            'status__in' => array('alive', 'zombie'),
+            'status__in' => ['alive', 'zombie'],
             'faction_id' => null, // => IS NULL
             'species__eq' => 'Indogene',
             'race' => 1,
-            'arrivalDate__neq' => null // => IS NOT NULL
+            'arrivalDate__neq' => null, // => IS NOT NULL
         ]);
 
         // test: calling add multiple times appends to filters
@@ -79,8 +99,8 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         $query = $creatureQueryMap->query([
             'race__ijo' => [ // the alias is expected to be the first two characters of the property: 'ra'. since no explicit one was given
                 'name__contains' => 'Omec',
-                'homeland__ljo' => ['atmosphereType' => 'N2O2CO2H2O'] // test: the alias for homePlanet => alias will be 'ho'
-            ]
+                'homeland__ljo' => ['atmosphereType' => 'N2O2CO2H2O'], // test: the alias for homePlanet => alias will be 'ho'
+            ],
         ]);
 
         $dql = $query->getDQL();
@@ -98,8 +118,8 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
             'faction__ljo' => [
                 //the reason to declare id columns as @Filter is to allow
                 //joining with a given id.
-                'id' => 3
-            ]
+                'id' => 3,
+            ],
         ], $creatureQueryMap::REUSE_FILTERS);
 
         // since Doctrine picks creates its own aliases and we don't need to
@@ -108,9 +128,9 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         $query = $creatureQueryMap->query([
             'race__ijo' => [
                 'leadingFaction__ijo' => [
-                    'capital' => 'Bucharest'
-                ]
-            ]
+                    'capital' => 'Bucharest',
+                ],
+            ],
         ]);
 
         $dql = $query->getDQL();
@@ -133,11 +153,11 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
                 'capital__ijo' => [
                     'leading_race__ijo' => [
                         'home_planet__ijo' => [
-                            'name__contains' => 'Chiajna'
-                        ]
-                    ]
-                ]
-            ]
+                            'name__contains' => 'Chiajna',
+                        ],
+                    ],
+                ],
+            ],
         ]);
 
         $dql = $query->getDQL();
@@ -152,24 +172,26 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Exception in QueryMap\Tests\Zend\QueryMap\CreatureQueryMap: Filter with key "arivalDate_gte" does not exist!
+     *
      * @expectedException \QueryMap\Exception\QueryMapException
      */
     public function testErrorOnInvalidFilter()
     {
         /** @var \QueryMap\Component\Map\QueryMap $creatureQueryMap */
         $creatureQueryMap = $this->service->create(Creature::class, 'cr');
-        $creatureQueryMap->query(array('arivalDate_gte' => '12-10-2015'));
+        $creatureQueryMap->query(['arivalDate_gte' => '12-10-2015']);
     }
 
     /**
-     * Invalid operator:"geq" in QueryMap\Tests\Zend\QueryMap\CreatureQueryMap
+     * Invalid operator:"geq" in QueryMap\Tests\Zend\QueryMap\CreatureQueryMap.
+     *
      * @expectedException \QueryMap\Exception\QueryMapException
      */
     public function testErrorOnInvalidOperator()
     {
         /** @var \QueryMap\Component\Map\QueryMap $creatureQueryMap */
         $creatureQueryMap = $this->service->create(Creature::class, 'cr');
-        $creatureQueryMap->query(array('arrivalDate__geq' => '12-10-2015'));
+        $creatureQueryMap->query(['arrivalDate__geq' => '12-10-2015']);
     }
 
     public function testNoErrorWhenJoinFilterHasNoQueryMap()
@@ -200,13 +222,13 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
             // test: custom 'between' with alias and explicit suffix (optional, just for fun)
             'creatureArrivedBetween__method' => ['12-10-2014', '12-10-2015'],
             'faction__ijo' => [
-                'creatureShareGreaterThan' => 10
+                'creatureShareGreaterThan' => 10,
                 //'creatureShare__gt' > 10  // should it be possible to combine method operator with something else?
-            ]
+            ],
         ]);
 
         $dql = $query->getDQL();
-        $this->assertContains("(cr.arrivalDate BETWEEN :arrivalDateStart AND :arrivalDateEnd)", $dql, '!method');
+        $this->assertContains('(cr.arrivalDate BETWEEN :arrivalDateStart AND :arrivalDateEnd)', $dql, '!method');
         $this->assertContains('(((cr.netWorth * 100) / fa.netWorth) > :percent)', $dql, '!method2');
 
         $this->assertEquals('12-10-2014', $query->getParameter('arrivalDateStart')->getValue());
@@ -216,6 +238,7 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
 
     /**
      * MethodFilter returned invalid callback or not initialized!
+     *
      * @expectedException \QueryMap\Exception\QueryMapException
      */
     public function testButIfMethodFiltersDoNotReturnAClosureAnExceptionIsRaised()
@@ -227,7 +250,7 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
 
     /**
      * When this test is written the alias of subQueryMaps is created
-     * from first two initials of the joined column... this might not bode well
+     * from first two initials of the joined column... this might not bode well.
      */
     public function testInternalAliasCollision()
     {
@@ -237,11 +260,10 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
             'creature_parent__ijo' => [
                 'name__like' => '%Wurtt',
                 'creature_parent__ljo' => [
-                    'name__contains' => 'Grandpa'
-                ]
-            ]
+                    'name__contains' => 'Grandpa',
+                ],
+            ],
         ]);
-
 
         $dql = $query->getDQL();
         $this->assertContains('INNER JOIN cr.aCreatureParent aC', $dql, '!collision_1');
@@ -251,7 +273,8 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Operator eq does not support value: QueryMap\Tests\Doctrine\Entity\Race Object
+     * Operator eq does not support value: QueryMap\Tests\Doctrine\Entity\Race Object.
+     *
      * @expectedException \QueryMap\Exception\QueryMapException
      */
     public function testCanFilterByIdGivenEntity()
@@ -265,7 +288,7 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Checks the expectations for the between operator
+     * Checks the expectations for the between operator.
      */
     public function testBetweenOperator()
     {
@@ -273,9 +296,8 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         $creatureQueryMap = $this->service->create(Creature::class, 'cr');
         $query = $creatureQueryMap->query([
             'cash__between' => [10000, 20000],
-            'arrivalDate__between' => ['24-12-2015', '31-12-2015']
+            'arrivalDate__between' => ['24-12-2015', '31-12-2015'],
         ]);
-
 
         $dql = $query->getDQL();
         $this->assertContains('cr.netWorth BETWEEN 10000 AND 20000', $dql, '!between1');
@@ -288,7 +310,7 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         $creatureQueryMap = $this->service->create(Creature::class, 'cr');
         $query = $creatureQueryMap->query([
             'faction__ijo__ftn' => [],
-            'race' => 5     // bonus test: join filter without join
+            'race' => 5,     // bonus test: join filter without join
         ]);
 
         $dql = $query->getDQL();
@@ -301,7 +323,7 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         $filtersRaw = [
             'arrived-before' => '24-12-2020',
             'cash-at-least' => '10000',
-            'has-faction-share-above' => '20%'
+            'has-faction-share-above' => '20%',
         ];
 
         $mapping = [
@@ -310,25 +332,25 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
                 'validate' => [CommonMappingHelper::VALID_DATETIME_STRING],
                 'process' => [
                     CommonMappingHelper::TRANSFORM_DATETIME => [
-                        CommonMappingHelper::SET_TIME_MAX
-                    ]
+                        CommonMappingHelper::SET_TIME_MAX,
+                    ],
                 ],
-                'key' => ['arrivalDate__lte' => null]
+                'key' => ['arrivalDate__lte' => null],
             ],
             'cash-at-least' => [
                 'preProcess' => [CommonMappingHelper::TYPE_INT],
                 'validate' => [CommonMappingHelper::VALID_NOT_EMPTY],
-                'key' => ['cash__gte' => null]
+                'key' => ['cash__gte' => null],
             ],
             'has-faction-share-above' => [
                 'preProcess' => [CommonMappingHelper::TYPE_INT],
                 'validate' => [CommonMappingHelper::VALID_NOT_EMPTY],
                 'key' => [
                     'faction__ijo' => [
-                        'creatureShareGreaterThan' => null
-                    ]
-                ]
-            ]
+                        'creatureShareGreaterThan' => null,
+                    ],
+                ],
+            ],
         ];
 
         /** @var \QueryMap\Contrib\Map\CommonQueryMap $creatureQueryMap */

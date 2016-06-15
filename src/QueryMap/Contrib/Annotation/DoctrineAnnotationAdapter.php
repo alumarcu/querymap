@@ -1,8 +1,28 @@
 <?php
+
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Alexandru Marcu <alumarcu@gmail.com>/DMS Team @ eMAG IT Research
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in the
+ * Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace QueryMap\Contrib\Annotation;
 
-use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
@@ -23,7 +43,7 @@ class DoctrineAnnotationAdapter implements AnnotationAdapterInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function get(AnnotationInterface $annotation, $section, $key = null)
     {
@@ -56,7 +76,7 @@ class DoctrineAnnotationAdapter implements AnnotationAdapterInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function has(AnnotationInterface $annotationWrapper, $section, $key = null)
     {
@@ -72,7 +92,7 @@ class DoctrineAnnotationAdapter implements AnnotationAdapterInterface
                 if (null === $key) {
                     return true;
                 } else {
-                    return (!empty($annotation->{$key}));
+                    return !empty($annotation->{$key});
                 }
             }
         }
@@ -86,12 +106,12 @@ class DoctrineAnnotationAdapter implements AnnotationAdapterInterface
             return true;
         }
 
-        $reusedDoctrineAnnotations = array(
+        $reusedDoctrineAnnotations = [
             DoctrineReader::WORD_COLUMN => Column::class,
             DoctrineReader::WORD_DOCTRINE_JOIN_COLUMN => JoinColumn::class,
             DoctrineReader::WORD_DOCTRINE_MANY_TO_ONE => ManyToOne::class,
             DoctrineReader::WORD_DOCTRINE_ONE_TO_ONE => OneToOne::class,
-        );
+        ];
 
         foreach ($reusedDoctrineAnnotations as $sectionName => $className) {
             if ($sectionName === $section && is_a($annotation, $className)) {
@@ -102,9 +122,8 @@ class DoctrineAnnotationAdapter implements AnnotationAdapterInterface
         return false;
     }
 
-
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function create(\Reflector $object)
     {

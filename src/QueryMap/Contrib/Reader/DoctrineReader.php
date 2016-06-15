@@ -1,4 +1,24 @@
 <?php
+
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Alexandru Marcu <alumarcu@gmail.com>/DMS Team @ eMAG IT Research
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in the
+ * Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace QueryMap\Contrib\Reader;
 
 use QueryMap\Component\Annotation\Annotation;
@@ -40,7 +60,7 @@ class DoctrineReader extends Reader
                 return $this->processAnnotationOfMethod($name, $annotation);
         }
 
-        return null;
+        return;
     }
 
     private function isValidAnnotationOnAttributes($name, Annotation $annotation)
@@ -65,13 +85,13 @@ class DoctrineReader extends Reader
     private function processAnnotationOfAttribute($name, Annotation $annotation)
     {
         // Accepted keys for both column and joinColumn cases
-        $acceptedKeys = array();
+        $acceptedKeys = [];
         $canonicalAttrName = $this->adapter->getCanonicalAttributeName($name);
         $acceptedKeys[] = $canonicalAttrName;
 
         if ($annotation->has($this->word(static::WORD_FILTER), $this->word(static::WORD_EXTRA_KEYS))) {
             $extraKeys = $annotation->get($this->word(static::WORD_FILTER), $this->word(static::WORD_EXTRA_KEYS));
-            $extraKeys = !is_array($extraKeys) ? array($extraKeys) : $extraKeys;
+            $extraKeys = !is_array($extraKeys) ? [$extraKeys] : $extraKeys;
             $acceptedKeys = array_merge($acceptedKeys, $extraKeys);
         }
 
@@ -86,7 +106,6 @@ class DoctrineReader extends Reader
             $newFilter = new AttributeFilter();
             $newFilter->setName($canonicalAttrName)
                 ->setColumn($colName);
-
         } elseif ($annotation->has($this->word(static::WORD_DOCTRINE_JOIN_COLUMN), $this->word(static::WORD_NAME))) {
             // @JoinColumn-only
             $colName = $annotation->get($this->word(static::WORD_DOCTRINE_JOIN_COLUMN), $this->word(static::WORD_NAME));
@@ -96,10 +115,10 @@ class DoctrineReader extends Reader
             $newFilter->setName($canonicalAttrName)
                 ->setColumn($colName);
 
-            $joinWords = array(
+            $joinWords = [
                 $this->word(static::WORD_DOCTRINE_MANY_TO_ONE),
-                $this->word(static::WORD_DOCTRINE_ONE_TO_ONE)
-            );
+                $this->word(static::WORD_DOCTRINE_ONE_TO_ONE),
+            ];
 
             foreach ($joinWords as $joinLocation) {
                 $targetEntity = $annotation->get($joinLocation, $this->word(static::WORD_DOCTRINE_TARGET_ENTITY));
@@ -116,7 +135,7 @@ class DoctrineReader extends Reader
         }
 
         // Compile all filters from this Annotation
-        $filters = array();
+        $filters = [];
         foreach ($acceptedKeys as $key) {
             if (!is_string($key) || empty($key)) {
                 // Show friendly error if a key is not a valid string
@@ -149,7 +168,7 @@ class DoctrineReader extends Reader
 
     private function processAnnotationOfMethod($name, Annotation $annotation)
     {
-        $acceptedKeys = array();
+        $acceptedKeys = [];
         $acceptedKeys[] = $name;
 
         if ($annotation->has($this->word(static::WORD_FILTER), $this->word(static::WORD_EXTRA_KEYS)) &&
@@ -164,7 +183,7 @@ class DoctrineReader extends Reader
         $filterInfo = new MethodFilter();
         $filterInfo->setName($name);
 
-        $filters = array();
+        $filters = [];
         foreach ($acceptedKeys as $key) {
             $filters[$key] = $filterInfo;
         }

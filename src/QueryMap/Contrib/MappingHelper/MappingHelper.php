@@ -1,22 +1,43 @@
 <?php
+
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Alexandru Marcu <alumarcu@gmail.com>/DMS Team @ eMAG IT Research
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in the
+ * Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace QueryMap\Contrib\MappingHelper;
 
 use QueryMap\Component\MappingHelper\MappingHelperInterface;
 use QueryMap\Exception\QueryMapException;
 
 /**
- * An example of MappingHelper implementation
+ * An example of MappingHelper implementation.
  */
 abstract class MappingHelper implements MappingHelperInterface
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
+     *
      * @see \QueryMap\Component\MappingHelper\MappingHelperInterface::transform
      */
     public function transform(array $filtersRaw, array $filtersMapping)
     {
         // Here we put filters for QueryMap
-        $transformedData = array();
+        $transformedData = [];
 
         // If there are filters with higher priority, only those will be considered
         $maxPriority = 0;
@@ -34,7 +55,7 @@ abstract class MappingHelper implements MappingHelperInterface
             try {
                 $this->validatePolicy($policy);
             } catch (QueryMapException $e) {
-                throw new QueryMapException($baseKey . ': ' .$e->getMessage());
+                throw new QueryMapException($baseKey.': '.$e->getMessage());
             }
 
             // Perform each transformation step
@@ -53,7 +74,7 @@ abstract class MappingHelper implements MappingHelperInterface
             if (!empty($policy['priority'])
                 && is_numeric($policy['priority'])
                 && $policy['priority'] > 0) {
-                $maxPriority = ($policy['priority'] > $maxPriority) ? (int)$policy['priority'] : $maxPriority;
+                $maxPriority = ($policy['priority'] > $maxPriority) ? (int) $policy['priority'] : $maxPriority;
             }
         }
 
@@ -61,7 +82,7 @@ abstract class MappingHelper implements MappingHelperInterface
         // user-provided filters we skip any filters with lower priority
         foreach ($filtersRaw as $baseKey => $rawValue) {
             $policy = $filtersMapping[$baseKey];
-            $priority = !empty($policy['priority']) ? (int)$policy['priority'] : 0;
+            $priority = !empty($policy['priority']) ? (int) $policy['priority'] : 0;
 
             if ($priority < $maxPriority) {
                 continue;  //A valid existing filter has a higher priority
@@ -86,9 +107,9 @@ abstract class MappingHelper implements MappingHelperInterface
      * by default the value to be replaced is null. This is used for placing processed
      * values of filters at their specified location in a QueryMap filter structure.
      *
-     * @param array      $array             An array in which to perform the replacement
-     * @param mixed      $replacement       A value which should be used as replacement
-     * @param null|mixed $valueToReplace    A value to be replaced
+     * @param array      $array          An array in which to perform the replacement
+     * @param mixed      $replacement    A value which should be used as replacement
+     * @param null|mixed $valueToReplace A value to be replaced
      *
      * @return array
      */
@@ -113,25 +134,28 @@ abstract class MappingHelper implements MappingHelperInterface
      * optional, some mandatory. This method validates rules on a policy are sufficient.
      *
      * @param array $policy
+     *
      * @return mixed
      */
     protected function validatePolicy(array $policy)
     {
-        $mandatoryKeys = array('key');
+        $mandatoryKeys = ['key'];
 
         $diff = array_diff($mandatoryKeys, array_keys($policy));
 
         if (!empty($diff)) {
-            throw new QueryMapException('Mandatory keys are missing from policy: ' . implode(', ', $diff));
+            throw new QueryMapException('Mandatory keys are missing from policy: '.implode(', ', $diff));
         }
 
         return true;
     }
 
     /**
-     * Performs a given list of transformations for a given value
-     * @param mixed     $value      A raw value to be processed
-     * @param array     $actions    A list of processing action to apply to the raw value
+     * Performs a given list of transformations for a given value.
+     *
+     * @param mixed $value   A raw value to be processed
+     * @param array $actions A list of processing action to apply to the raw value
+     *
      * @return mixed
      */
     protected function process($value, array $actions)
@@ -153,10 +177,12 @@ abstract class MappingHelper implements MappingHelperInterface
     }
 
     /**
-     * Performs a given list of validations for a given value
-     * @param   mixed     $value          A value to be validated
-     * @param   array     $validations    A list of validations to do
-     * @return  bool
+     * Performs a given list of validations for a given value.
+     *
+     * @param mixed $value       A value to be validated
+     * @param array $validations A list of validations to do
+     *
+     * @return bool
      */
     protected function validate($value, array $validations)
     {
@@ -181,7 +207,7 @@ abstract class MappingHelper implements MappingHelperInterface
 
     /**
      * Implements the default set of validations and
-     * should also provide the hook for subclasses to extend this
+     * should also provide the hook for subclasses to extend this.
      *
      * @param $value        mixed         The value which to validate
      * @param $validation   mixed         The validation to be performed
@@ -189,11 +215,11 @@ abstract class MappingHelper implements MappingHelperInterface
      *
      * @return mixed
      */
-    abstract protected function performValidation($value, $validation, $params = array());
+    abstract protected function performValidation($value, $validation, $params = []);
 
     /**
      * Implements the default set of processing actions and
-     * should also provide the hook for subclasses to extend this
+     * should also provide the hook for subclasses to extend this.
      *
      * @param $value    mixed           The value which to process
      * @param $action   mixed           The processing action to be performed
@@ -201,5 +227,5 @@ abstract class MappingHelper implements MappingHelperInterface
      *
      * @return mixed
      */
-    abstract protected function processAction($value, $action, $params = array());
+    abstract protected function processAction($value, $action, $params = []);
 }

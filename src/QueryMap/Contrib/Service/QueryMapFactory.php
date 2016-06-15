@@ -1,4 +1,24 @@
 <?php
+
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Alexandru Marcu <alumarcu@gmail.com>/DMS Team @ eMAG IT Research
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in the
+ * Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace QueryMap\Contrib\Service;
 
 use QueryMap\Component\Annotation\Annotation;
@@ -7,13 +27,15 @@ use QueryMap\Contrib\Reader\DoctrineReader;
 abstract class QueryMapFactory
 {
     /**
-     * The class of the mapped entity for which a query map was last created
+     * The class of the mapped entity for which a query map was last created.
+     *
      * @var string
      */
     protected $currentMappedEntityClass;
 
     /**
-     * The alias of the last created query map
+     * The alias of the last created query map.
+     *
      * @var string
      */
     protected $currentAlias;
@@ -21,40 +43,44 @@ abstract class QueryMapFactory
     /**
      * The history of all aliases in the current query map tree which contains
      * alias as key and the value represents the number of times that alias was used.
-     * Needed to avoid alias collisions in DQL (since Doctrine further manages its own aliases)
+     * Needed to avoid alias collisions in DQL (since Doctrine further manages its own aliases).
+     *
      * @var array<string>
      */
     protected $aliasHistory;
 
     /**
-     * Name of a connection, if something other than default should be used
+     * Name of a connection, if something other than default should be used.
+     *
      * @var null|string
      */
     protected $connectionName = null;
 
     /**
-     * Returns a generic querymap when no other is defined
+     * Returns a generic querymap when no other is defined.
      *
      * @param $alias
+     *
      * @return \QueryMap\Contrib\Map\CommonQueryMap
      */
     abstract public function getGenericQueryMap($alias);
 
     /**
      * @param string|null $connection
+     *
      * @return \Doctrine\Common\Persistence\ObjectManager|object
      */
     abstract public function getEntityManager($connection = null);
 
     /**
-     * Returns the annotation adapter
+     * Returns the annotation adapter.
      *
      * @return \QueryMap\Component\Annotation\AnnotationAdapterInterface
      */
     abstract public function getAnnotationAdapter();
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getRepository()
     {
@@ -62,7 +88,7 @@ abstract class QueryMapFactory
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getDb()
     {
@@ -80,7 +106,7 @@ abstract class QueryMapFactory
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getAlias()
     {
@@ -88,7 +114,7 @@ abstract class QueryMapFactory
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function getUniqueAlias($alias)
     {
@@ -96,20 +122,21 @@ abstract class QueryMapFactory
             $this->aliasHistory[$alias] = 0;
         }
 
-        $this->aliasHistory[$alias]++;
+        ++$this->aliasHistory[$alias];
 
         if ($this->aliasHistory[$alias] > 1) {
-            return $alias . $this->aliasHistory[$alias];
+            return $alias.$this->aliasHistory[$alias];
         }
 
         return $alias;
     }
 
     /**
-     * Prepares a new query map given an entity name and alias
+     * Prepares a new query map given an entity name and alias.
      *
-     * @param string    $entityName
-     * @param string    $alias
+     * @param string $entityName
+     * @param string $alias
+     *
      * @return \QueryMap\Contrib\Map\CommonQueryMap
      */
     public function createMap($entityName, $alias)
@@ -132,7 +159,7 @@ abstract class QueryMapFactory
         $qm->setMappedEntity($mappedEntity);
 
         //TODO: Perhaps check that the trait is applied to a class implementing the interface?
-        /** @var $this QueryMapFactoryInterface */
+        /* @var $this QueryMapFactoryInterface */
         $qm->createAdapter($this);
         $qm->createFilters();
 
@@ -158,12 +185,13 @@ abstract class QueryMapFactory
     /**
      * @param $entityName
      * @param $alias
+     *
      * @return \QueryMap\Contrib\Map\CommonQueryMap
      */
     public function createMapNew($entityName, $alias)
     {
         // Refresh alias history whenever a new QueryMap is created
-        $this->aliasHistory = array();
+        $this->aliasHistory = [];
 
         $qm = $this->createMap($entityName, $alias);
 
@@ -174,6 +202,7 @@ abstract class QueryMapFactory
      * @param $entityName
      * @param $alias
      * @param null|string $connection
+     *
      * @return \QueryMap\Contrib\Map\CommonQueryMap
      */
     public function create($entityName, $alias, $connection = null)

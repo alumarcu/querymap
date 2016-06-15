@@ -1,4 +1,24 @@
 <?php
+
+/*
+ * The MIT License (MIT)
+ * Copyright (c) 2016 Alexandru Marcu <alumarcu@gmail.com>/DMS Team @ eMAG IT Research
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in the
+ * Software without restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ * Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace QueryMap\Component\Reader;
 
 use QueryMap\Component\Annotation\Annotation;
@@ -12,7 +32,7 @@ abstract class Reader
 
     /**
      * Constants below define default annotation syntax and can be
-     * aliased by implementing a getWord() method in a concrete adapter
+     * aliased by implementing a getWord() method in a concrete adapter.
      */
     const WORD_FILTER = 'Filter';
     const WORD_COLUMN = 'Column';
@@ -25,7 +45,7 @@ abstract class Reader
     const WORD_ON = 'on';
     const WORD_AS = 'as';
 
-    protected $annotationCache = array();
+    protected $annotationCache = [];
 
     /** @var \QueryMap\Component\Map\QueryMapAdapter */
     protected $adapter;
@@ -34,18 +54,20 @@ abstract class Reader
     protected static $instance = null;
 
     /**
-     * @param   $name
-     * @param   Annotation     $annotation
-     * @param   $source
-     * @return  bool
+     * @param            $name
+     * @param Annotation $annotation
+     * @param            $source
+     *
+     * @return bool
      */
     abstract protected function isValidAnnotation($name, Annotation $annotation, $source);
 
     /**
-     * @param   string        $name
-     * @param   Annotation   $annotation
-     * @param   int           $source
-     * @return  array
+     * @param string     $name
+     * @param Annotation $annotation
+     * @param int        $source
+     *
+     * @return array
      */
     abstract protected function processAnnotation($name, Annotation $annotation, $source);
 
@@ -62,11 +84,14 @@ abstract class Reader
     }
 
     /**
-     * Get annotations for an object's attributes or properties
+     * Get annotations for an object's attributes or properties.
+     *
      * @param $object
      * @param $source
-     * @return array|bool
+     *
      * @throws \QueryMap\Exception\QueryMapException
+     *
+     * @return array|bool
      */
     public function getAnnotations($object, $source)
     {
@@ -74,10 +99,10 @@ abstract class Reader
             $reflectionObject = new \ReflectionClass($object);
 
             switch ($source) {
-                case Reader::FROM_ATTRIBUTES:
+                case self::FROM_ATTRIBUTES:
                     $annotatedObjects = $reflectionObject->getProperties();
                     break;
-                case Reader::FROM_PUBLIC_METHODS:
+                case self::FROM_PUBLIC_METHODS:
                     $annotatedObjects = $reflectionObject->getMethods(\ReflectionMethod::IS_PUBLIC);
                     break;
                 default:
@@ -100,10 +125,11 @@ abstract class Reader
 
     /**
      * Creates a key for the cache based on the class name and the
-     * type of annotations that were read (i.e. from attributes or methods)
+     * type of annotations that were read (i.e. from attributes or methods).
      *
      * @param $object
      * @param $source
+     *
      * @return string
      */
     private function getCacheKey($object, $source)
@@ -112,7 +138,7 @@ abstract class Reader
     }
 
     /**
-     * Save the annotation to cache
+     * Save the annotation to cache.
      *
      * @param $object
      * @param $source
@@ -128,10 +154,11 @@ abstract class Reader
     }
 
     /**
-     * Get annotation from cache
+     * Get annotation from cache.
      *
      * @param $object
      * @param $source
+     *
      * @return bool|array
      */
     public function getCachedAnnotation($object, $source)
@@ -145,6 +172,7 @@ abstract class Reader
         $cacheKey = $this->getCacheKey($object, $source);
         if ($content = $this->adapter->loadFromCache($cacheKey)) {
             $this->annotationCache[get_class($object)][$source] = $content;
+
             return $content;
         }
 
@@ -153,13 +181,14 @@ abstract class Reader
     }
 
     /**
-     * @param   \ReflectionClass[]|array $objects
-     * @param   $source
-     * @return  Annotation[]
+     * @param \ReflectionClass[]|array $objects
+     * @param                          $source
+     *
+     * @return Annotation[]
      */
     protected function getAnnotationsFromObjects(array $objects, $source)
     {
-        $annotations = array();
+        $annotations = [];
 
         foreach ($objects as $object) {
             $annotation = $this->createAnnotation($object);
