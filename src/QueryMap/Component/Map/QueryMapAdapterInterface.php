@@ -42,13 +42,6 @@ interface QueryMapAdapterInterface
     public function setQuery($query);
 
     /**
-     * Returns the SQL for the current query
-     *
-     * @return string
-     */
-    public function getQuerySql();
-
-    /**
      * Provides the logic required to add a FilterInterface object
      * to the concrete framework specific query by considering the
      * actual type the Filter object has

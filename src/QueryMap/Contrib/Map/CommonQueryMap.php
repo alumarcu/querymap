@@ -51,14 +51,6 @@ abstract class CommonQueryMap extends QueryMap implements MappingHelperInterface
     }
 
     /**
-     * @see \QueryMap\Component\Map\QueryMapAdapterInterface::getQuery
-     */
-    public function getQuery()
-    {
-        return $this->adapter->getQuery();
-    }
-
-    /**
      * @see \QueryMap\Component\Map\QueryMapAdapterInterface::setQuery
      * @inheritdoc
      */
@@ -102,15 +94,6 @@ abstract class CommonQueryMap extends QueryMap implements MappingHelperInterface
     public function saveToCache($key, $value)
     {
         return $this->adapter->saveToCache($key, $value);
-    }
-
-    /**
-     * @see \QueryMap\Component\Map\QueryMapAdapterInterface::getQuerySql
-     * @inheritdoc
-     */
-    public function getQuerySql()
-    {
-        return $this->adapter->getQuerySql();
     }
 
     /**

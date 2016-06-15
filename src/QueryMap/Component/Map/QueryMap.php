@@ -7,6 +7,11 @@ use QueryMap\Exception\QueryMapException;
 
 abstract class QueryMap implements QueryMapInterface, QueryMapAdapterInterface
 {
+    const REUSE_NONE = 0;
+    const REUSE_FILTERS = 1;
+    const REUSE_OBJECT = 2;
+    const REUSE_ALL = 3;
+
     /** @var array|\QueryMap\Component\Operator\OperatorInterface[] */
     protected $registeredOperators = array();
 
@@ -40,14 +45,26 @@ abstract class QueryMap implements QueryMapInterface, QueryMapAdapterInterface
     }
 
     /**
-     * @inheritdoc
-     * @see \QueryMap\Component\Map\QueryMapInterface::add
+     * Add a set of filters to the QueryMap buffer
+     *
+     * @param  array  $filters    A key-value array with filters. When a join filter
+     *                            is given its value can be another array of filters
+     * @param  int    $reuse      What should be reused QueryMap::REUSE_* [NONE, FILTERS, OBJECT, ALL]
+     * @return \Doctrine\ORM\QueryBuilder
      */
-    public function add(array $filters)
+    public function query(array $filters, $reuse = self::REUSE_NONE)
     {
-        $this->filters = array_merge_recursive($this->filters, $filters);
+        if ($reuse & self::REUSE_OBJECT === 0) {
+            $this->createQuery();
+        }
 
-        return $this;
+        if ($reuse & self::REUSE_FILTERS > 0) {
+            $this->filters = array_merge_recursive($this->filters, $filters);
+        } else {
+            $this->filters = $filters;
+        }
+
+        return $this->compile();
     }
 
     /**
@@ -87,10 +104,10 @@ abstract class QueryMap implements QueryMapInterface, QueryMapAdapterInterface
     }
 
     /**
-     * @inheritdoc
-     * @see \QueryMap\Component\Map\QueryMapInterface::make
+     * Known filters are added to the engine specific concrete query object
+     * @return \Doctrine\ORM\QueryBuilder
      */
-    public function make()
+    protected function compile()
     {
         foreach ($this->filters as $filterSpec => $filterValue) {
             $nameTokens = explode($this->adapter->getSeparator(), $filterSpec);
@@ -126,16 +143,6 @@ abstract class QueryMap implements QueryMapInterface, QueryMapAdapterInterface
         }
 
         return $this->getQuery();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function fresh()
-    {
-        $this->createQuery();
-
-        return $this;
     }
 
     /**
@@ -181,32 +188,11 @@ abstract class QueryMap implements QueryMapInterface, QueryMapAdapterInterface
     }
 
     /**
-     * @return array
+     * @see \QueryMap\Component\Map\QueryMapAdapterInterface::getQuery
      */
-    public function getBuffer()
+    public function getQuery()
     {
-        return $this->filters;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function resetBuffer()
-    {
-        $this->filters = array();
-
-        return $this;
-    }
-
-    /**
-     * Aggregates fresh and resetBuffer methods, clearing both
-     * the query object instance and the filters that were set
-     */
-    public function clear()
-    {
-        return $this
-            ->fresh()
-            ->resetBuffer();
+        return $this->adapter->getQuery();
     }
 
     /**

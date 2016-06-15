@@ -4,6 +4,7 @@ namespace QueryMap\Contrib\Adapter;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\QueryBuilder;
 use QueryMap\Component\Filter\FilterInterface;
+use QueryMap\Component\Map\QueryMap;
 use QueryMap\Component\Map\QueryMapAdapter;
 use QueryMap\Component\Reader\Reader;
 use QueryMap\Contrib\Filter\AttributeFilter;
@@ -49,14 +50,6 @@ abstract class DoctrineAdapter extends QueryMapAdapter
     /**
      * @inheritdoc
      */
-    public function getQuerySql()
-    {
-        return $this->dumpSql($this->query);
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function addToQuery(FilterInterface $filter)
     {
         switch (true) {
@@ -87,11 +80,16 @@ abstract class DoctrineAdapter extends QueryMapAdapter
 
                     /** @var \QueryMap\Contrib\Map\CommonQueryMap $subQueryMap */
                     $subQueryMap = $this->configObject->createMap($targetEntity, $joinAlias);
-                    $subQueryMap->setQuery($this->getQuery())
-                        ->add($filterValue)
-                        ->make();
 
-                    $this->setQuery($subQueryMap->getQuery());
+                    $query = $subQueryMap->getQuery();
+
+
+                    /** @var \Doctrine\ORM\QueryBuilder $query */
+                    $query = $subQueryMap
+                        ->setQuery($this->getQuery())
+                        ->query($filterValue, QueryMap::REUSE_ALL);
+
+                    $this->setQuery($query);
                 } elseif (!empty($filterValue) && is_array($filterValue)) {
                     throw new QueryMapException(
                         sprintf(
@@ -260,172 +258,5 @@ abstract class DoctrineAdapter extends QueryMapAdapter
         }
 
         return $value;
-    }
-
-    /**
-     * Will be removed in future versions
-     * @deprecated
-     * @param QueryBuilder $query
-     * @return String
-     */
-    protected function dumpSql(QueryBuilder $query)
-    {
-        $dql = $query->getQuery()->getDQL();
-        preg_match_all('/(?<=(?<!Bundle|Bundle:):)[a-zA-Z_]\w+/i', $dql, $results);
-        $expectedParams = $results[0];
-
-        $params = array();
-        foreach ($expectedParams as $key => $ep) {
-            $pp = $query->getParameter($ep);
-
-            $params[$key] = self::processParam($pp);
-        }
-
-        //$helper = new DoctrineExtension();
-        if (1 || php_sapi_name() === 'cli') {
-            //bugged formatter for cli output ... waiting for sqlFormatter update
-            \SqlFormatter::$cli = false;
-
-            return \SqlFormatter::format(
-                html_entity_decode(
-                    strip_tags(
-                        $this->replaceQueryParameters(
-                            $query->getQuery()->getSQL(),
-                            $params
-                        )
-                    )
-                ),
-                false
-            );
-        }
-
-        return \SqlFormatter::format(
-            html_entity_decode(
-                strip_tags(
-                    $this->replaceQueryParameters(
-                        $query->getQuery()->getSQL(),
-                        $params
-                    )
-                )
-            )
-        );
-    }
-
-    protected static function processParam($param)
-    {
-        /** @var $param \Doctrine\ORM\Query\Parameter */
-        if (is_object($param) &&
-            !$param instanceof \DateTime &&
-            !$param instanceof \Doctrine\ORM\Query\Parameter
-        ) {
-            return $param->getId();
-        } elseif ($param instanceof \Doctrine\ORM\Query\Parameter) {
-            if ($param->getValue() instanceof \DateTime) {
-                return $param->getValue()->format('Y-m-d H:i:s');
-            } elseif ($param->getValue() instanceof Collection) {
-                $values = array();
-                foreach ($param->getValue()->toArray() as $item) {
-                    $values[] = self::processParam($item);
-                }
-
-                return implode(',', $values);
-            } elseif (is_object($param->getValue())) {
-                return $param->getValue()->getId();
-            } elseif (is_array($param->getValue())) {
-                return self::processParam($param->getValue());
-            } elseif (is_bool($param->getValue())) {
-                return (int)$param->getValue();
-            } else {
-                return $param->getValue();
-            }
-        } elseif (is_array($param)) {
-            $return = array();
-            foreach ($param as $p) {
-                $return[] = self::processParam($p);
-            }
-
-            return $return;
-        } elseif ($param instanceof \DateTime) {
-            return $param->format('Y-m-d H:i:s');
-        } elseif (!is_object($param)) {
-            if (is_bool($param)) {
-                return (int)$param;
-            }
-
-            return $param;
-        } else {
-            return $param->getValue();
-        }
-    }
-
-    protected function replaceQueryParameters($query, $parameters)
-    {
-        $i = 0;
-
-        $result = preg_replace_callback(
-            '/\?|(:[a-zA-Z_]\w+)/i',
-            function ($matches) use ($parameters, &$i) {
-                $key = substr($matches[0], 1);
-
-                if (!array_key_exists($i, $parameters) && !array_key_exists($key, $parameters)) {
-                    return $matches[0];
-                }
-
-                $value = array_key_exists($i, $parameters) ? $parameters[$i] : $parameters[$key];
-                $result = is_null($value) ? 'NULL' : $this->escapeFunction($value);
-                $i++;
-
-                return $result;
-            },
-            $query
-        );
-
-        $result = \SqlFormatter::highlight($result);
-        $result = str_replace(array('<pre ', '</pre>'), array('<span ', '</span>'), $result);
-
-        return $result;
-    }
-
-    /**
-     * Escape parameters of a SQL query
-     * DON'T USE THIS FUNCTION OUTSIDE ITS INTENDED SCOPE
-     *
-     * @internal
-     *
-     * @param mixed $parameter
-     *
-     * @return string
-     */
-    protected function escapeFunction($parameter)
-    {
-        $result = $parameter;
-
-        switch (true) {
-            case is_string($result):
-                $result = "'".addslashes($result)."'";
-                break;
-
-            case is_array($result):
-                foreach ($result as &$value) {
-                    $value = $this->escapeFunction($value);
-                }
-
-                $result = implode(', ', $result);
-                break;
-
-            case is_object($result):
-                $result = addslashes((string) $result);
-                break;
-
-            case null === $result:
-                $result = 'NULL';
-                break;
-
-            case is_bool($result):
-                $result = $result ? '1' : '0';
-                break;
-        }
-
-        return $result;
     }
 }
