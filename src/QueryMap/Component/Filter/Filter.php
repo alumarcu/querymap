@@ -21,6 +21,7 @@
 
 namespace QueryMap\Component\Filter;
 
+use QueryMap\Component\Map\QueryMapAdapterInterface;
 use QueryMap\Component\Operator\OperatorInterface;
 use QueryMap\Exception\QueryMapException;
 
@@ -99,11 +100,15 @@ abstract class Filter implements FilterInterface
     }
 
     /**
+     * @param QueryMapAdapterInterface $adapter
+     *
      * @return OperatorInterface
      */
-    public function getOperator()
+    public function update(QueryMapAdapterInterface $adapter)
     {
-        return $this->operator;
+        $this->operator
+            ->setFilter($this)
+            ->update($adapter);
     }
 
     /**

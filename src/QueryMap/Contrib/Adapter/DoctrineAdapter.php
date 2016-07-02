@@ -79,9 +79,11 @@ abstract class DoctrineAdapter extends QueryMapAdapter
                     $joinAlias = $this->configObject->getUniqueAlias(substr($filter->getName(), 0, 2));
                 }
 
-                $this->joinWith($filter->getOperator(), [$joinAlias, $filter->getName()]);
-                $filterValue = $filter->getValue();
+                $filter->setAs($joinAlias);
+                $filter->update($this);
 
+                //Handle additional filter inside
+                $filterValue = $filter->getValue();
                 if (!empty($filterValue) && is_array($filterValue) && $filter->getQueryMap()) {
                     // For doctrine, use the entity class' annotation
                     // to extract the destination query map
@@ -100,8 +102,6 @@ abstract class DoctrineAdapter extends QueryMapAdapter
                     /** @var \QueryMap\Contrib\Map\CommonQueryMap $subQueryMap */
                     $subQueryMap = $this->configObject->createMap($targetEntity, $joinAlias);
 
-                    $query = $subQueryMap->getQuery();
-
                     /** @var \Doctrine\ORM\QueryBuilder $query */
                     $query = $subQueryMap
                         ->setQuery($this->getQuery())
@@ -118,7 +118,7 @@ abstract class DoctrineAdapter extends QueryMapAdapter
                 }
                 break;
             case $filter instanceof AttributeFilter:
-                $this->getQuery()->andWhere($this->condition($filter));
+                $filter->update($this);
                 break;
             case $filter instanceof MethodFilter:
                 $filter->addToQuery();
@@ -162,27 +162,6 @@ abstract class DoctrineAdapter extends QueryMapAdapter
     /**
      * {@inheritdoc}
      */
-    public function condition(FilterInterface $filter)
-    {
-        $operator = $filter->getOperator();
-        $callback = $operator->getCallback($this);
-
-        if (!is_callable($callback)) {
-            throw new QueryMapException(sprintf('Incorrect or missing callback on operator: %s', get_class($operator)));
-        }
-
-        $condition = $callback($filter->getName(), $filter->getValue());
-
-        if ($alias = $filter->getAlias()) {
-            return sprintf('(%s.%s)', $alias, $condition);
-        }
-
-        return sprintf('(%s)', $condition);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function loadFromCache($key)
     {
         if (array_key_exists($key, $this->tmpCache)) {
@@ -212,24 +191,6 @@ abstract class DoctrineAdapter extends QueryMapAdapter
         $reader->setAdapter($this);
 
         return $reader;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function joinWith($operator, $name)
-    {
-        $joinAlias = $name[0];
-        $propName = $this->getAlias().'.'.$name[1];
-
-        switch (true) {
-            case $operator instanceof JoinLeftOperator:
-                $this->getQuery()->leftJoin($propName, $joinAlias);
-                break;
-            case $operator instanceof JoinInnerOperator:
-                $this->getQuery()->innerJoin($propName, $joinAlias);
-                break;
-        }
     }
 
     /**

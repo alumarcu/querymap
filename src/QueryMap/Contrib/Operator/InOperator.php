@@ -49,4 +49,19 @@ class InOperator extends Operator
             return $adapter->prepare("{$f} IN (:{$f})", [$f => $v]);
         };
     }
+
+    public function update(QueryMapAdapterInterface $adapter)
+    {
+        $values = $this->filter->getValue();
+        $name = $this->filter->getName();
+        $alias = $this->filter->getAlias();
+
+        $paramName = $name.'#'.$this->getName();
+
+        /** @var \Doctrine\ORM\QueryBuilder $query */
+        $query = $adapter->getQuery();
+
+        $query->andWhere("{$alias}.{$name} IN (:{$paramName})")
+            ->setParameter($paramName, $values);
+    }
 }

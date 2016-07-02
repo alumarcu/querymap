@@ -44,24 +44,33 @@ class NotEqualOperator extends Operator
     }
 
     /**
-     * @see     \QueryMap\Component\Map\QueryMapAdapterInterface::getCallback
-     *
      * @param QueryMapAdapterInterface $adapter
-     *
-     * @return callable
      */
-    public function getCallback(QueryMapAdapterInterface $adapter)
+    public function update(QueryMapAdapterInterface $adapter)
     {
-        return function ($f, $v) use ($adapter) {
+        $values = $this->filter->getValue();
+        $name = $this->filter->getName();
+        $alias = $this->filter->getAlias();
+
+        $paramName = $name.'#'.$this->getName();
+
+        /** @var \Doctrine\ORM\QueryBuilder $query */
+        $query = $adapter->getQuery();
+
+        if (!is_array($values)) {
+            $values = [$values];
+        }
+
+        foreach ($values as $value) {
             switch (true) {
-                case is_scalar($v):
-                    return $adapter->prepare("{$f} <> :{$f}", [$f => $v]);
-
-                case is_null($v):
-                    return $adapter->prepare("{$f} IS NOT NULL", []);
+                case is_scalar($value):
+                    $query->andWhere("{$alias}.{$name} != :{$paramName}")
+                        ->setParameter($paramName, $value);
+                    break;
+                case is_null($value):
+                    $query->andWhere("{$alias}.{$name} IS NOT NULL");
+                    break;
             }
-
-            return;
-        };
+        }
     }
 }

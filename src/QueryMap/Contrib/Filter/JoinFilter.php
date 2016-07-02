@@ -157,6 +157,6 @@ class JoinFilter extends AttributeFilter
      */
     public function isValid()
     {
-        return in_array(get_class($this->getOperator()), $this->joinOperators);
+        return in_array(get_class($this->operator), $this->joinOperators);
     }
 }

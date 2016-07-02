@@ -43,17 +43,18 @@ class LessThanOperator extends Operator
         return true;
     }
 
-    /**
-     * @see     \QueryMap\Component\Map\QueryMapAdapterInterface::getCallback
-     *
-     * @param QueryMapAdapterInterface $adapter
-     *
-     * @return callable
-     */
-    public function getCallback(QueryMapAdapterInterface $adapter)
+    public function update(QueryMapAdapterInterface $adapter)
     {
-        return function ($f, $v) use ($adapter) {
-            return $adapter->prepare("{$f} < :{$f}", [$f => $v]);
-        };
+        $value = $this->filter->getValue();
+        $name = $this->filter->getName();
+        $alias = $this->filter->getAlias();
+
+        $paramName = $name.'#'.$this->getName();
+
+        /** @var \Doctrine\ORM\QueryBuilder $query */
+        $query = $adapter->getQuery();
+
+        $query->andWhere("{$alias}.{$name} < :{$paramName}")
+            ->setParameter($paramName, $value);
     }
 }

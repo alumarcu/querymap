@@ -21,6 +21,21 @@
 
 namespace QueryMap\Component\Operator;
 
+use QueryMap\Component\Filter\FilterInterface;
+
 abstract class Operator implements OperatorInterface
 {
+    /** @var FilterInterface|\QueryMap\Contrib\Filter\JoinFilter */
+    protected $filter;
+
+    /**
+     * @param FilterInterface $filter
+     * @return OperatorInterface
+     */
+    public function setFilter(FilterInterface $filter)
+    {
+        $this->filter = $filter;
+
+        return $this;
+    }
 }

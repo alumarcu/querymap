@@ -71,16 +71,6 @@ interface QueryMapAdapterInterface
     public function addToQuery(FilterInterface $filter);
 
     /**
-     * Calls the callback provided by the filter's operator and
-     * returns the resulting condition, eventually adding the alias.
-     *
-     * @param FilterInterface $filter
-     *
-     * @return mixed
-     */
-    public function condition(FilterInterface $filter);
-
-    /**
      * Loads a cached annotation using a framework specific cache.
      *
      * @param $key

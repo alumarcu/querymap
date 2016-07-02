@@ -43,23 +43,20 @@ class BetweenOperator extends Operator
         return true;
     }
 
-    /**
-     * @see     \QueryMap\Component\Map\QueryMapAdapterInterface::getCallback
-     *
-     * @param QueryMapAdapterInterface $adapter
-     *
-     * @return callable
-     */
-    public function getCallback(QueryMapAdapterInterface $adapter)
+    public function update(QueryMapAdapterInterface $adapter)
     {
-        return function ($f, $v) use ($adapter) {
-            if (is_numeric($v[0])) {
-                $format = '%s BETWEEN %s AND %s';
-            } else {
-                $format = "%s BETWEEN '%s' AND '%s'";
-            }
+        $values = $this->filter->getValue();
+        $name = $this->filter->getName();
+        $alias = $this->filter->getAlias();
 
-            return sprintf($format, $f, $v[0], $v[1]);
-        };
+        $paramNameMin = $name.'#'.$this->getName().'#min';
+        $paramNameMax = $name.'#'.$this->getName().'#max';
+
+        /** @var \Doctrine\ORM\QueryBuilder $query */
+        $query = $adapter->getQuery();
+
+        $query->andWhere("{$alias}.{$name} BETWEEN :{$paramNameMin} AND :{$paramNameMax}")
+            ->setParameter($paramNameMin, $values[0])
+            ->setParameter($paramNameMax, $values[1]);
     }
 }

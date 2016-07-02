@@ -89,14 +89,6 @@ abstract class CommonQueryMap extends QueryMap implements MappingHelperInterface
         $this->adapter->createQuery();
     }
 
-    /**
-     * @see \QueryMap\Component\Map\QueryMapAdapterInterface::condition
-     * {@inheritdoc}
-     */
-    public function condition(FilterInterface $filter)
-    {
-        return $this->adapter->condition($filter);
-    }
 
     /**
      * @see \QueryMap\Component\Map\QueryMapAdapterInterface::loadFromCache

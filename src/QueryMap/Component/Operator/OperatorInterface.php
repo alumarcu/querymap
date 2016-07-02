@@ -21,6 +21,7 @@
 
 namespace QueryMap\Component\Operator;
 
+use QueryMap\Component\Filter\FilterInterface;
 use QueryMap\Component\Map\QueryMapAdapterInterface;
 
 interface OperatorInterface
@@ -32,16 +33,7 @@ interface OperatorInterface
      */
     public function getName();
 
-    /**
-     * Returns a callable method that provides the
-     * conditional part of a query given a filter
-     * name and a value.
-     *
-     * @param \QueryMap\Component\Map\QueryMapAdapterInterface $adapter
-     *
-     * @return callable
-     */
-    public function getCallback(QueryMapAdapterInterface $adapter);
+    public function update(QueryMapAdapterInterface $adapter);
 
     /**
      * Whether a given operator allows a specific value or not
@@ -52,4 +44,11 @@ interface OperatorInterface
      * @return bool
      */
     public function supportsValue($value);
+
+    /**
+     * @param FilterInterface $filter
+     *
+     * @return OperatorInterface
+     */
+    public function setFilter(FilterInterface $filter);
 }

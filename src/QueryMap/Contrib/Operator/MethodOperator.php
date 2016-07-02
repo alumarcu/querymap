@@ -41,8 +41,7 @@ class MethodOperator extends Operator
         return true;
     }
 
-    public function getCallback(QueryMapAdapterInterface $adapter)
+    public function update(QueryMapAdapterInterface $adapter)
     {
-        return;
     }
 }

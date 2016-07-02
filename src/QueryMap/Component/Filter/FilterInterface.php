@@ -21,6 +21,7 @@
 
 namespace QueryMap\Component\Filter;
 
+use QueryMap\Component\Map\QueryMapAdapterInterface;
 use QueryMap\Component\Map\QueryMapInterface;
 use QueryMap\Component\Operator\OperatorInterface;
 
@@ -79,9 +80,11 @@ interface FilterInterface
     public function setOperator(OperatorInterface $operator);
 
     /**
+     * @param QueryMapAdapterInterface $adapter
+     *
      * @return OperatorInterface
      */
-    public function getOperator();
+    public function update(QueryMapAdapterInterface $adapter);
 
     /**
      * Name of the attribute or method.

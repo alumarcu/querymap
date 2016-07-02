@@ -33,51 +33,43 @@ use QueryMap\Contrib\Annotation\DoctrineAnnotationMapping as QM;
 class Creature
 {
     /**
-     * @QM\Filter
      * @ORM\Column(name="id")
      * @ORM\Id
      */
     protected $id;
 
     /**
-     * @QM\Filter
      * @ORM\Column(name="name")
      */
     protected $name;
 
     /**
-     * @QM\Filter
      * @ORM\Column(name="age")
      */
     protected $age;
 
     /**
-     * @QM\Filter
      * @ORM\ManyToOne(targetEntity="\QueryMap\Tests\Doctrine\Entity\Race")
      * @ORM\JoinColumn(name="race_id", referencedColumnName="id", nullable=true)
      */
     protected $race;
 
     /**
-     * @QM\Filter
      * @ORM\Column(name="gender")
      */
     protected $gender;
 
     /**
-     * @QM\Filter
      * @ORM\Column(name="status")
      */
     protected $status;
 
     /**
-     * @QM\Filter
      * @ORM\Column(name="species")
      */
     protected $species;
 
     /**
-     * @QM\Filter
      * @ORM\ManyToOne(targetEntity="\QueryMap\Tests\Doctrine\Entity\Faction")
      * @ORM\JoinColumn(name="faction_id", referencedColumnName="id", nullable=true)
      */
@@ -86,7 +78,6 @@ class Creature
     /**
      * This is only used for CreatureTest::testNoErrorWhenJoinFilterHasNoQueryMap.
      *
-     * @QM\Filter
      * @ORM\ManyToOne(targetEntity="\QueryMap\Tests\Doctrine\Entity\Faction")
      * @ORM\JoinColumn(name="second_faction_id", referencedColumnName="id", nullable=true)
      */
@@ -99,7 +90,6 @@ class Creature
     protected $netWorth;
 
     /**
-     * @QM\Filter
      * @ORM\Column(name="arrival_date")
      */
     protected $arrivalDate;
@@ -107,9 +97,13 @@ class Creature
     /**
      * Thievery to see how it cracks on alias collision in our own management (not Doctrine's).
      *
-     * @QM\Filter
      * @ORM\ManyToOne(targetEntity="\QueryMap\Tests\Doctrine\Entity\Creature")
      * @ORM\JoinColumn(name="creature_parent", referencedColumnName="id", nullable=true)
      */
     protected $aCreatureParent;
+
+    /**
+     * @ORM\Column(name="flags")
+     */
+    protected $flags;
 }

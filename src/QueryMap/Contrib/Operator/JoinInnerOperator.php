@@ -43,8 +43,15 @@ class JoinInnerOperator extends Operator
         return true;
     }
 
-    public function getCallback(QueryMapAdapterInterface $adapter)
+    public function update(QueryMapAdapterInterface $adapter)
     {
-        return;
+        $as = $this->filter->getAs();
+        $name = $this->filter->getName();
+        $alias = $this->filter->getAlias();
+
+        /** @var \Doctrine\ORM\QueryBuilder $query */
+        $query = $adapter->getQuery();
+        
+        $query->innerJoin("{$alias}.{$name}", $as);
     }
 }

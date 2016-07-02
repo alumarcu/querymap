@@ -40,29 +40,52 @@ class ContainsOperator extends Operator
      */
     public function supportsValue($value)
     {
-        if (!is_string($value) && !is_int($value)) {
+        if (!is_array($value) && !is_string($value) && !is_int($value)) {
             return false;
+        }
+
+        if (is_array($value)) {
+            foreach ($value as $arrayItem) {
+                if (!is_string($arrayItem) && !is_int($arrayItem)) {
+                    return false;
+                }
+            }
         }
 
         return true;
     }
 
     /**
-     * @see     \QueryMap\Component\Map\QueryMapAdapterInterface::getCallback
-     *
      * @param QueryMapAdapterInterface $adapter
-     *
-     * @return callable
      */
-    public function getCallback(QueryMapAdapterInterface $adapter)
+    public function update(QueryMapAdapterInterface $adapter)
     {
-        return function ($f, $v) use ($adapter) {
-            switch (true) {
-                case is_string($v) || is_int($v):
-                    return $adapter->prepare("{$f} LIKE :{$f}", [$f => "%{$v}%"]);
-            }
+        $values = $this->filter->getValue();
+        $name = $this->filter->getName();
+        $alias = $this->filter->getAlias();
 
-            return;
-        };
+        $paramName = $name.'#'.$this->getName();
+        
+        /** @var \Doctrine\ORM\QueryBuilder $query */
+        $query = $adapter->getQuery();
+        
+        if (!is_array($values)) {
+            $values = [$values];
+        }
+        
+        // TODO: And vs Or.
+        // TODO: Separate in two operators.
+        foreach ($values as $value) {
+            switch (true) {
+                case is_string($value):
+                    $query->andWhere("{$alias}.{$name} LIKE :{$paramName}")
+                        ->setParameter($paramName, $value);
+                    break;
+                case is_int($value):
+                    $query->andWhere("BIT_AND({$alias}.{$name}, :{$paramName}) > 0")
+                        ->setParameter($paramName, $value);
+                    break;
+            }
+        }
     }
 }

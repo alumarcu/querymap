@@ -39,6 +39,7 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
 
     public function testBasicOperatorsWork()
     {
+        // TODO: Improve this test so that it builds the query filters and asserts in a loop
         /** @var \QueryMap\Component\Map\QueryMap $creatureQueryMap */
         $creatureQueryMap = $this->service->create(Creature::class, 'cr');
 
@@ -52,12 +53,25 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $dql = $query->getDQL();
-        $this->assertContains('(cr.age >= 16)', $dql, '!gte');
-        $this->assertContains('(cr.age <= 30)', $dql, '!lte');
-        $this->assertContains("(cr.status = 'alive')", $dql, '!eq');
-        $this->assertContains("(cr.species <> 'Human')", $dql, '!neq');
-        $this->assertContains('(cr.netWorth > 10000)', $dql, '!gt');
-        $this->assertContains('(cr.netWorth < 30000)', $dql, '!lt');
+        $this->assertContains('cr.age >= :age', $dql, '!gte');
+        $this->assertContains('cr.age <= :age', $dql, '!lte');
+        $this->assertContains("cr.status = :status", $dql, '!eq');
+        $this->assertContains("cr.species != :species", $dql, '!neq');
+        $this->assertContains('cr.netWorth > :netWorth', $dql, '!gt');
+        $this->assertContains('cr.netWorth < :netWorth', $dql, '!lt');
+
+        $this->assertNotEmpty($query->getParameter('age#gte'));
+        $this->assertEquals(16, $query->getParameter('age#gte')->getValue());
+        $this->assertNotEmpty($query->getParameter('age#lte'));
+        $this->assertEquals(30, $query->getParameter('age#lte')->getValue());
+        $this->assertNotEmpty($query->getParameter('species#neq'));
+        $this->assertEquals('Human', $query->getParameter('species#neq')->getValue());
+        $this->assertNotEmpty($query->getParameter('status#eq'));
+        $this->assertEquals('alive', $query->getParameter('status#eq')->getValue());
+        $this->assertNotEmpty($query->getParameter('netWorth#gt'));
+        $this->assertEquals(10000, $query->getParameter('netWorth#gt')->getValue());
+        $this->assertNotEmpty($query->getParameter('netWorth#lt'));
+        $this->assertEquals(30000, $query->getParameter('netWorth#lt')->getValue());
     }
 
     public function testJoinOperatorsCanWorkAsFiltersWithoutJoiningAndTestOtherOperators()
@@ -82,12 +96,12 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
 
         $dql = $query->getDQL();
         $this->assertNotContains('[IGNORED_NULL]', $dql, '!null');
-        $this->assertContains("(cr.status IN ('alive', 'zombie'))", $dql, '!in');
-        $this->assertContains('(cr.faction IS NULL)', $dql, '!null');
-        $this->assertContains("(cr.species = 'Indogene')", $dql, '!eq');
-        $this->assertContains('(cr.race = 1)', $dql, '!eq>join_col');
-        $this->assertContains('(cr.arrivalDate IS NOT NULL)', $dql, '!notnull');
-        $this->assertContains("(cr.name LIKE '%Yewkhaji')", $dql, '!notnull');
+        $this->assertContains("cr.status IN (:status#in)", $dql, '!in');
+        $this->assertContains('cr.faction IS NULL', $dql, '!null');
+        $this->assertContains("cr.species = :species#eq", $dql, '!eq');
+        $this->assertContains('cr.race = :race#eq', $dql, '!eq>join_col');
+        $this->assertContains('cr.arrivalDate IS NOT NULL', $dql, '!notnull');
+        $this->assertContains("cr.name LIKE :name#like", $dql, '!notnull');
     }
 
     public function testSeveralSimpleJoinCases()
@@ -364,5 +378,28 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('cr.netWorth >= 10000', $dql, '!cashAtLeast');
         $this->assertContains('(((cr.netWorth * 100) / fa.netWorth) > :percent)', $dql, '!shareGt');
         $this->assertEquals('20', $query->getParameter('percent')->getValue());
+    }
+
+    public function testSearchInSetUsingBits()
+    {
+        /** @var \QueryMap\Component\Map\QueryMap $creatureQueryMap */
+        $creatureQueryMap = $this->service->create(Creature::class, 'cr');
+        $query = $creatureQueryMap->query([
+            'flags' => 9 // bit 0 and 3 (2^0 + 2^3)
+        ]);
+
+        $dql = $query->getDQL();
+        $this->assertContains('(cr.flags = 9)', $dql);
+
+        // TODO: Carefully figure how to organize the bit filter
+        // - should move BIT_AND > 0 to contains operator ??
+        // --> contains this OR contains that ==> How do we do it??
+        // TODO: OR mechanism, multi-usage of same filter
+        $query = $creatureQueryMap->query([
+            'flags__and' => 1 // flags and 1 > 0
+        ]);
+
+        $dql = $query->getDQL();
+        $this->assertContains('(cr.flags = 9)', $dql);
     }
 }

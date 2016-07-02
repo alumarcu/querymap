@@ -61,4 +61,19 @@ class LikeOperator extends Operator
             return;
         };
     }
+
+    public function update(QueryMapAdapterInterface $adapter)
+    {
+        $value = $this->filter->getValue();
+        $name = $this->filter->getName();
+        $alias = $this->filter->getAlias();
+
+        $paramName = $name.'#'.$this->getName();
+
+        /** @var \Doctrine\ORM\QueryBuilder $query */
+        $query = $adapter->getQuery();
+
+        $query->andWhere("{$alias}.{$name} LIKE :{$paramName}")
+            ->setParameter($paramName, $value);
+    }
 }
