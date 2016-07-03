@@ -55,7 +55,7 @@ class EqualOperator extends Operator
         /** @var \Doctrine\ORM\QueryBuilder $query */
         $query = $adapter->getQuery();
 
-        $paramName = $name.'#'.$this->getName();
+        $paramName = $alias.'#'.$name.'#'.$this->getName();
         
         if (!is_array($values)) {
             $values = [$values];

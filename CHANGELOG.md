@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+* 1.1.2
+    * updated operators to use the query object directly
+    * added bit search in contains - passing int value now searches for that bit
+
 * 1.1.1 (2016-06-15)
     * changed interface to a single method: query
     * removed dependency on sql-formatter

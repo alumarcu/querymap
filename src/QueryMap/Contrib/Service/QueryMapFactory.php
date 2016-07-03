@@ -116,8 +116,10 @@ abstract class QueryMapFactory
     /**
      * {@inheritdoc}
      */
-    public function getUniqueAlias($alias)
+    public function getUniqueAlias($filterName)
     {
+        $alias = strtolower(substr($filterName, 0, 2));
+
         if (!isset($this->aliasHistory[$alias])) {
             $this->aliasHistory[$alias] = 0;
         }

@@ -56,7 +56,7 @@ class InOperator extends Operator
         $name = $this->filter->getName();
         $alias = $this->filter->getAlias();
 
-        $paramName = $name.'#'.$this->getName();
+        $paramName = $alias.'#'.$name.'#'.$this->getName();
 
         /** @var \Doctrine\ORM\QueryBuilder $query */
         $query = $adapter->getQuery();

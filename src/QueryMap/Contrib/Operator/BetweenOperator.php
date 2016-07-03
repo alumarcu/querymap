@@ -49,8 +49,8 @@ class BetweenOperator extends Operator
         $name = $this->filter->getName();
         $alias = $this->filter->getAlias();
 
-        $paramNameMin = $name.'#'.$this->getName().'#min';
-        $paramNameMax = $name.'#'.$this->getName().'#max';
+        $paramNameMin = $alias.'#'.$name.'#'.$this->getName().'#min';
+        $paramNameMax = $alias.'#'.$name.'#'.$this->getName().'#max';
 
         /** @var \Doctrine\ORM\QueryBuilder $query */
         $query = $adapter->getQuery();

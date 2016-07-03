@@ -1,9 +1,9 @@
 ROADMAP
 =======
 Short Term:
-* [ ] Implement the bit filter and ability to check if bit exists or is missing. Should accept arrays.
 * [ ] The ability to run the same filters twice with different values.
 * [ ] Analysis: Getting rid of @QM\Map - what would it take to do it.
+* [x] Implement the bit filter and ability to check if bit exists or is missing. Should accept arrays.
 * [x] Check use statements and use individual components instead of entire symfony in composer.json
 * [x] Fix unit tests and remove dependency to dumpSql/jdorn formatter
 * [x] Simplified use, without top level add/fresh/make

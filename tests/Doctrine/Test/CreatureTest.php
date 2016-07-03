@@ -39,7 +39,6 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
 
     public function testBasicOperatorsWork()
     {
-        // TODO: Improve this test so that it builds the query filters and asserts in a loop
         /** @var \QueryMap\Component\Map\QueryMap $creatureQueryMap */
         $creatureQueryMap = $this->service->create(Creature::class, 'cr');
 
@@ -53,25 +52,26 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $dql = $query->getDQL();
-        $this->assertContains('cr.age >= :age', $dql, '!gte');
-        $this->assertContains('cr.age <= :age', $dql, '!lte');
-        $this->assertContains("cr.status = :status", $dql, '!eq');
-        $this->assertContains("cr.species != :species", $dql, '!neq');
-        $this->assertContains('cr.netWorth > :netWorth', $dql, '!gt');
-        $this->assertContains('cr.netWorth < :netWorth', $dql, '!lt');
+        $this->assertContains('cr.age >= :cr#age#gte', $dql, '!gte');
+        $this->assertContains('cr.age <= :cr#age#lte', $dql, '!lte');
+        $this->assertContains("cr.status = :cr#status#eq", $dql, '!eq');
+        $this->assertContains("cr.species != :cr#species#neq", $dql, '!neq');
+        $this->assertContains('cr.netWorth > :cr#netWorth#gt', $dql, '!gt');
+        $this->assertContains('cr.netWorth < :cr#netWorth#lt', $dql, '!lt');
 
-        $this->assertNotEmpty($query->getParameter('age#gte'));
-        $this->assertEquals(16, $query->getParameter('age#gte')->getValue());
-        $this->assertNotEmpty($query->getParameter('age#lte'));
-        $this->assertEquals(30, $query->getParameter('age#lte')->getValue());
-        $this->assertNotEmpty($query->getParameter('species#neq'));
-        $this->assertEquals('Human', $query->getParameter('species#neq')->getValue());
-        $this->assertNotEmpty($query->getParameter('status#eq'));
-        $this->assertEquals('alive', $query->getParameter('status#eq')->getValue());
-        $this->assertNotEmpty($query->getParameter('netWorth#gt'));
-        $this->assertEquals(10000, $query->getParameter('netWorth#gt')->getValue());
-        $this->assertNotEmpty($query->getParameter('netWorth#lt'));
-        $this->assertEquals(30000, $query->getParameter('netWorth#lt')->getValue());
+        $tests = [
+            'cr#age#gte' => 16,
+            'cr#age#lte' => 30,
+            'cr#species#neq' => 'Human',
+            'cr#status#eq' => 'alive',
+            'cr#netWorth#gt' => 10000,
+            'cr#netWorth#lt' => 30000
+        ];
+
+        foreach ($tests as $paramKey => $paramValue) {
+            $this->assertNotEmpty($query->getParameter($paramKey));
+            $this->assertEquals($paramValue, $query->getParameter($paramKey)->getValue());
+        }
     }
 
     public function testJoinOperatorsCanWorkAsFiltersWithoutJoiningAndTestOtherOperators()
@@ -92,16 +92,28 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         ]);
 
         // test: calling add multiple times appends to filters
-        $creatureQueryMap->query(['name__like' => '%Yewkhaji'], true);
+        $creatureQueryMap->query(['name__like' => '%Yewkhaji'], $creatureQueryMap::REUSE_FILTERS);
 
         $dql = $query->getDQL();
         $this->assertNotContains('[IGNORED_NULL]', $dql, '!null');
-        $this->assertContains("cr.status IN (:status#in)", $dql, '!in');
+        $this->assertContains("cr.status IN (:cr#status#in)", $dql, '!in');
         $this->assertContains('cr.faction IS NULL', $dql, '!null');
-        $this->assertContains("cr.species = :species#eq", $dql, '!eq');
-        $this->assertContains('cr.race = :race#eq', $dql, '!eq>join_col');
+        $this->assertContains("cr.species = :cr#species#eq", $dql, '!eq');
+        $this->assertContains('cr.race = :cr#race#eq', $dql, '!eq>join_col');
         $this->assertContains('cr.arrivalDate IS NOT NULL', $dql, '!notnull');
-        $this->assertContains("cr.name LIKE :name#like", $dql, '!notnull');
+        $this->assertContains("cr.name LIKE :cr#name#like", $dql, '!notnull');
+
+        $tests = [
+            'cr#status#in' => ['alive', 'zombie'],
+            'cr#species#eq' => 'Indogene',
+            'cr#race#eq' => 1,
+            'cr#name#like' => '%Yewkhaji'
+        ];
+
+        foreach ($tests as $paramKey => $paramValue) {
+            $this->assertNotEmpty($query->getParameter($paramKey));
+            $this->assertEquals($paramValue, $query->getParameter($paramKey)->getValue());
+        }
     }
 
     public function testSeveralSimpleJoinCases()
@@ -120,8 +132,18 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         $dql = $query->getDQL();
         $this->assertContains('INNER JOIN cr.race ra', $dql, '!ijo');
         $this->assertContains('LEFT JOIN ra.homePlanet ', $dql, '!ljo');
-        $this->assertContains("(ra.name LIKE '%Omec%')", $dql, '!any');
-        $this->assertContains("(ho.atmosphereType = 'N2O2CO2H2O')", $dql, '!ljo>eq');
+        $this->assertContains("ra.name LIKE :ra#name#contains", $dql, '!any');
+        $this->assertContains("ho.atmosphereType = :ho#atmosphereType#eq", $dql, '!ljo>eq');
+
+        $tests = [
+            'ra#name#contains' => 'Omec',
+            'ho#atmosphereType#eq' => 'N2O2CO2H2O'
+        ];
+
+        foreach ($tests as $paramKey => $paramValue) {
+            $this->assertNotEmpty($query->getParameter($paramKey));
+            $this->assertEquals($paramValue, $query->getParameter($paramKey)->getValue());
+        }
     }
 
     public function testMultipleJoinsAndAliasNamingConflictDoesNotHappen()
@@ -130,13 +152,11 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         $creatureQueryMap = $this->service->create(Creature::class, 'cr');
         $creatureQueryMap->query([
             'faction__ljo' => [
-                //the reason to declare id columns as @Filter is to allow
-                //joining with a given id.
                 'id' => 3,
             ],
         ], $creatureQueryMap::REUSE_FILTERS);
 
-        // since Doctrine picks creates its own aliases and we don't need to
+        // since Doctrine creates its own aliases and we don't need to
         // specify an alias by which to join in our entities, there is no
         // chance of naming collision here; the joins will be performed separately
         $query = $creatureQueryMap->query([
@@ -148,10 +168,20 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $dql = $query->getDQL();
+
         $this->assertContains('LEFT JOIN cr.faction fa', $dql, '!ljo');
         $this->assertContains('INNER JOIN cr.race ra', $dql, '!ijo_1');
         $this->assertContains('INNER JOIN ra.leadingFaction le', $dql, '!ijo_2');
-        $this->assertContains('(fa.id = 3)', $dql, '!ljo>eq');
+        $this->assertContains('fa.id = :fa#id#eq', $dql, '!ljo>eq');
+
+        $tests = [
+            'fa#id#eq' => 3,
+        ];
+
+        foreach ($tests as $paramKey => $paramValue) {
+            $this->assertNotEmpty($query->getParameter($paramKey));
+            $this->assertEquals($paramValue, $query->getParameter($paramKey)->getValue());
+        }
     }
 
     public function testMultipleJoinsCircularDependency()
@@ -161,13 +191,15 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
 
         //should work as long as there is no aliasing conflict
         $query = $creatureQueryMap->query([
-            'name__like' => 'Gigel%',
+            'name__like' => 'Nick%',
             'faction__ljo' => [
                 'guns__gte' => 500,
                 'capital__ijo' => [
                     'leading_race__ijo' => [
                         'home_planet__ijo' => [
-                            'name__contains' => 'Chiajna',
+                            // this caused a parameter collision with the above name__like
+                            // until the alias was included in the parameter name
+                            'name__like' => '%Chiajna%',
                         ],
                     ],
                 ],
@@ -175,13 +207,25 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $dql = $query->getDQL();
+
         $this->assertContains('LEFT JOIN cr.faction fa', $dql, '!ljo');
         $this->assertContains('INNER JOIN fa.capital ca', $dql, '!ijo_1');
         $this->assertContains('INNER JOIN ca.leadingRace le', $dql, '!ijo_2');
         $this->assertContains('INNER JOIN le.homePlanet ho', $dql, '!ijo_3');
-        $this->assertContains("(cr.name LIKE 'Gigel%')", $dql, '!like');
-        $this->assertContains('(fa.guns >= 500)', $dql, '!ljo>gte');
-        $this->assertContains("(ho.name LIKE '%Chiajna%')", $dql, '!ijo>like');
+        $this->assertContains("cr.name LIKE :cr#name#like", $dql, '!like');
+        $this->assertContains('fa.guns >= :fa#guns#gte', $dql, '!ljo>gte');
+        $this->assertContains("ho.name LIKE :ho#name#like", $dql, '!ijo>like');
+
+        $tests = [
+            'cr#name#like' => 'Nick%',
+            'ho#name#like' => '%Chiajna%',
+            'fa#guns#gte' => 500
+        ];
+
+        foreach ($tests as $paramKey => $paramValue) {
+            $this->assertNotEmpty($query->getParameter($paramKey));
+            $this->assertEquals($paramValue, $query->getParameter($paramKey)->getValue());
+        }
     }
 
     /**
@@ -274,16 +318,26 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
             'creature_parent__ijo' => [
                 'name__like' => '%Wurtt',
                 'creature_parent__ljo' => [
-                    'name__contains' => 'Grandpa',
+                    'name__like' => '%Grandpa',
                 ],
             ],
         ]);
 
         $dql = $query->getDQL();
-        $this->assertContains('INNER JOIN cr.aCreatureParent aC', $dql, '!collision_1');
-        $this->assertContains('LEFT JOIN aC.aCreatureParent aC2', $dql, '!collision_2');
-        $this->assertContains("(aC.name LIKE '%Wurtt')", $dql, '!collision_3');
-        $this->assertContains("(aC2.name LIKE '%Grandpa%')", $dql, '!collision_4');
+        $this->assertContains('INNER JOIN cr.aCreatureParent ac', $dql, '!collision_1');
+        $this->assertContains('LEFT JOIN ac.aCreatureParent ac2', $dql, '!collision_2');
+        $this->assertContains("ac.name LIKE :ac#name#like", $dql, '!collision_3');
+        $this->assertContains("ac2.name LIKE :ac2#name#like", $dql, '!collision_4');
+
+        $tests = [
+            'ac#name#like' => '%Wurtt',
+            'ac2#name#like' => '%Grandpa'
+        ];
+
+        foreach ($tests as $paramKey => $paramValue) {
+            $this->assertNotEmpty($query->getParameter($paramKey));
+            $this->assertEquals($paramValue, $query->getParameter($paramKey)->getValue());
+        }
     }
 
     /**
@@ -314,8 +368,20 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $dql = $query->getDQL();
-        $this->assertContains('cr.netWorth BETWEEN 10000 AND 20000', $dql, '!between1');
-        $this->assertContains("cr.arrivalDate BETWEEN '24-12-2015' AND '31-12-2015'", $dql, '!between2');
+        $this->assertContains('cr.netWorth BETWEEN :cr#netWorth#between#min AND :cr#netWorth#between#max', $dql, '!between1');
+        $this->assertContains("cr.arrivalDate BETWEEN :cr#arrivalDate#between#min AND :cr#arrivalDate#between#max", $dql, '!between2');
+
+        $tests = [
+            'cr#netWorth#between#min' => 10000,
+            'cr#netWorth#between#max'=> 20000,
+            'cr#arrivalDate#between#min' => '24-12-2015',
+            'cr#arrivalDate#between#max' => '31-12-2015'
+        ];
+
+        foreach ($tests as $paramKey => $paramValue) {
+            $this->assertNotEmpty($query->getParameter($paramKey));
+            $this->assertEquals($paramValue, $query->getParameter($paramKey)->getValue());
+        }
     }
 
     public function testAliasForJoin()
@@ -329,7 +395,16 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
 
         $dql = $query->getDQL();
         $this->assertContains('INNER JOIN cr.faction ftn', $dql);
-        $this->assertContains('(cr.race = 5)', $dql);
+        $this->assertContains('cr.race = :cr#race#eq', $dql);
+
+        $tests = [
+            'cr#race#eq' => 5
+        ];
+
+        foreach ($tests as $paramKey => $paramValue) {
+            $this->assertNotEmpty($query->getParameter($paramKey));
+            $this->assertEquals($paramValue, $query->getParameter($paramKey)->getValue());
+        }
     }
 
     public function testCommonMappingHelper()
@@ -374,10 +449,20 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         $query = $creatureQueryMap->query($filters);
 
         $dql = $query->getDQL();
-        $this->assertContains("cr.arrivalDate <= '2020-12-24 23:59:59", $dql, '!arrivedBefore');
-        $this->assertContains('cr.netWorth >= 10000', $dql, '!cashAtLeast');
+        $this->assertContains("cr.arrivalDate <= :cr#arrivalDate#lte", $dql, '!arrivedBefore');
+        $this->assertContains('cr.netWorth >= :cr#netWorth#gte', $dql, '!cashAtLeast');
         $this->assertContains('(((cr.netWorth * 100) / fa.netWorth) > :percent)', $dql, '!shareGt');
         $this->assertEquals('20', $query->getParameter('percent')->getValue());
+
+        $tests = [
+            'cr#arrivalDate#lte' => '2020-12-24 23:59:59', //Changed order of date tokens and added time with SET_TIME_MAX processor
+            'cr#netWorth#gte' => 10000,
+        ];
+
+        foreach ($tests as $paramKey => $paramValue) {
+            $this->assertNotEmpty($query->getParameter($paramKey));
+            $this->assertEquals($paramValue, $query->getParameter($paramKey)->getValue());
+        }
     }
 
     public function testSearchInSetUsingBits()
@@ -385,21 +470,19 @@ class CreatureTest extends \PHPUnit_Framework_TestCase
         /** @var \QueryMap\Component\Map\QueryMap $creatureQueryMap */
         $creatureQueryMap = $this->service->create(Creature::class, 'cr');
         $query = $creatureQueryMap->query([
-            'flags' => 9 // bit 0 and 3 (2^0 + 2^3)
+            'flags__contains' => 9 // bit 0 and 3 (2^0 + 2^3)
         ]);
 
         $dql = $query->getDQL();
-        $this->assertContains('(cr.flags = 9)', $dql);
+        $this->assertContains('BIT_AND(cr.flags, :cr#flags#contains) > 0', $dql);
 
-        // TODO: Carefully figure how to organize the bit filter
-        // - should move BIT_AND > 0 to contains operator ??
-        // --> contains this OR contains that ==> How do we do it??
-        // TODO: OR mechanism, multi-usage of same filter
-        $query = $creatureQueryMap->query([
-            'flags__and' => 1 // flags and 1 > 0
-        ]);
+        $tests = [
+            'cr#flags#contains' => 9,
+        ];
 
-        $dql = $query->getDQL();
-        $this->assertContains('(cr.flags = 9)', $dql);
+        foreach ($tests as $paramKey => $paramValue) {
+            $this->assertNotEmpty($query->getParameter($paramKey));
+            $this->assertEquals($paramValue, $query->getParameter($paramKey)->getValue());
+        }
     }
 }

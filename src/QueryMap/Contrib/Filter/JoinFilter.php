@@ -138,7 +138,7 @@ class JoinFilter extends AttributeFilter
     }
 
     /**
-     * @param string $as
+     * @param string|null $as
      *
      * @return JoinFilter
      */

@@ -1,27 +1,29 @@
 
 
-Code Coverage Report 
-  2016-06-15 16:40:30
-
- Summary: 
-  Classes: 43.90% (18/41)
-  Methods: 65.00% (104/160)
-  Lines:   79.03% (490/620)
+Code Coverage Report:      
+  2016-07-03 16:32:15      
+                           
+ Summary:                  
+  Classes: 41.03% (16/39)  
+  Methods: 66.05% (107/162)
+  Lines:   80.50% (574/713)
 
 \QueryMap\Component\Annotation::Annotation
   Methods:  85.71% ( 6/ 7)   Lines:  80.00% (  8/ 10)
 \QueryMap\Component\Filter::Filter
-  Methods:  87.50% ( 7/ 8)   Lines:  85.19% ( 23/ 27)
+  Methods:  62.50% ( 5/ 8)   Lines:  86.67% ( 26/ 30)
 \QueryMap\Component\Map::QueryMap
-  Methods:  83.33% (10/12)   Lines:  85.96% ( 49/ 57)
+  Methods:  72.73% ( 8/11)   Lines:  85.96% ( 49/ 57)
 \QueryMap\Component\Map::QueryMapAdapter
   Methods:  85.71% ( 6/ 7)   Lines:  88.89% (  8/  9)
+\QueryMap\Component\Operator::Operator
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  2/  2)
 \QueryMap\Component\Reader::Reader
-  Methods:  71.43% (10/14)   Lines:  88.37% ( 38/ 43)
+  Methods:  66.67% ( 8/12)   Lines:  88.37% ( 38/ 43)
 \QueryMap\Contrib\Adapter::DoctrineAdapter
-  Methods: 100.00% (13/13)   Lines:  83.75% ( 67/ 80)
+  Methods:  54.55% ( 6/11)   Lines:  65.62% ( 42/ 64)
 \QueryMap\Contrib\Annotation::DoctrineAnnotationAdapter
-  Methods: 100.00% ( 5/ 5)   Lines:  85.71% ( 24/ 28)
+  Methods:  33.33% ( 2/ 6)   Lines:  86.05% ( 37/ 43)
 \QueryMap\Contrib\Annotation\DoctrineAnnotationMapping::Filter
   Methods: 100.00% ( 1/ 1)   Lines: 100.00% (  1/  1)
 \QueryMap\Contrib\Annotation\DoctrineAnnotationMapping::Map
@@ -29,42 +31,42 @@ Code Coverage Report
 \QueryMap\Contrib\Filter::AttributeFilter
   Methods:  80.00% ( 4/ 5)   Lines:  87.50% (  7/  8)
 \QueryMap\Contrib\Filter::JoinFilter
-  Methods:  50.00% ( 5/10)   Lines: 100.00% (  9/  9)
+  Methods: 100.00% ( 6/ 6)   Lines: 100.00% ( 11/ 11)
 \QueryMap\Contrib\Filter::MethodFilter
-  Methods:  66.67% ( 4/ 6)   Lines: 100.00% ( 11/ 11)
+  Methods: 100.00% ( 4/ 4)   Lines: 100.00% ( 11/ 11)
 \QueryMap\Contrib\Map::CommonQueryMap
-  Methods:  25.00% ( 3/12)   Lines:  43.75% (  7/ 16)
+  Methods:  30.00% ( 3/10)   Lines:  46.67% (  7/ 15)
 \QueryMap\Contrib\MappingHelper::CommonMappingHelper
-  Methods: 100.00% ( 2/ 2)   Lines:  68.75% ( 22/ 32)
+  Methods:   0.00% ( 0/ 2)   Lines:  68.75% ( 22/ 32)
 \QueryMap\Contrib\MappingHelper::MappingHelper
-  Methods:  71.43% ( 5/ 7)   Lines:  83.02% ( 44/ 53)
+  Methods:  40.00% ( 2/ 5)   Lines:  83.02% ( 44/ 53)
 \QueryMap\Contrib\Operator::BetweenOperator
-  Methods: 100.00% ( 4/ 4)   Lines: 100.00% ( 13/ 13)
+  Methods: 100.00% ( 3/ 3)   Lines: 100.00% ( 13/ 13)
 \QueryMap\Contrib\Operator::ContainsOperator
-  Methods: 100.00% ( 4/ 4)   Lines: 100.00% (  9/  9)
+  Methods: 100.00% ( 3/ 3)   Lines: 100.00% ( 21/ 21)
 \QueryMap\Contrib\Operator::EqualOperator
-  Methods: 100.00% ( 4/ 4)   Lines:  87.50% ( 14/ 16)
+  Methods: 100.00% ( 3/ 3)   Lines: 100.00% ( 20/ 20)
 \QueryMap\Contrib\Operator::GreaterThanOperator
-  Methods: 100.00% ( 4/ 4)   Lines:  87.50% (  7/  8)
+  Methods:  66.67% ( 2/ 3)   Lines:  91.67% ( 11/ 12)
 \QueryMap\Contrib\Operator::GreaterThanOrEqualOperator
-  Methods: 100.00% ( 4/ 4)   Lines:  87.50% (  7/  8)
+  Methods:  66.67% ( 2/ 3)   Lines:  91.67% ( 11/ 12)
 \QueryMap\Contrib\Operator::InOperator
-  Methods: 100.00% ( 4/ 4)   Lines: 100.00% (  7/  7)
+  Methods: 100.00% ( 3/ 3)   Lines: 100.00% ( 11/ 11)
 \QueryMap\Contrib\Operator::JoinInnerOperator
-  Methods:  66.67% ( 2/ 3)   Lines: 100.00% (  3/  3)
+  Methods: 100.00% ( 3/ 3)   Lines: 100.00% (  9/  9)
 \QueryMap\Contrib\Operator::JoinLeftOperator
-  Methods:  66.67% ( 2/ 3)   Lines: 100.00% (  3/  3)
+  Methods: 100.00% ( 3/ 3)   Lines: 100.00% (  9/  9)
 \QueryMap\Contrib\Operator::LessThanOperator
-  Methods: 100.00% ( 4/ 4)   Lines:  87.50% (  7/  8)
+  Methods:  66.67% ( 2/ 3)   Lines:  91.67% ( 11/ 12)
 \QueryMap\Contrib\Operator::LessThanOrEqualOperator
-  Methods: 100.00% ( 4/ 4)   Lines:  87.50% (  7/  8)
+  Methods:  66.67% ( 2/ 3)   Lines:  91.67% ( 11/ 12)
 \QueryMap\Contrib\Operator::LikeOperator
-  Methods: 100.00% ( 4/ 4)   Lines: 100.00% (  9/  9)
+  Methods: 100.00% ( 3/ 3)   Lines: 100.00% ( 11/ 11)
 \QueryMap\Contrib\Operator::MethodOperator
-  Methods:  66.67% ( 2/ 3)   Lines: 100.00% (  2/  2)
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
 \QueryMap\Contrib\Operator::NotEqualOperator
-  Methods: 100.00% ( 4/ 4)   Lines:  81.25% ( 13/ 16)
+  Methods:  66.67% ( 2/ 3)   Lines:  95.00% ( 19/ 20)
 \QueryMap\Contrib\Reader::DoctrineReader
-  Methods: 100.00% ( 6/ 6)   Lines:  90.28% ( 65/ 72)
+  Methods:  33.33% ( 2/ 6)   Lines:  90.28% ( 65/ 72)
 \QueryMap\Contrib\Service::QueryMapFactory
-  Methods:  76.92% (10/13)   Lines: 100.00% ( 36/ 36)
+  Methods:  90.00% ( 9/10)   Lines:  97.30% ( 36/ 37)

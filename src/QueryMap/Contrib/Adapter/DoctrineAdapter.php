@@ -76,11 +76,13 @@ abstract class DoctrineAdapter extends QueryMapAdapter
                 $joinAlias = $filter->getAs();
 
                 if (empty($joinAlias)) {
-                    $joinAlias = $this->configObject->getUniqueAlias(substr($filter->getName(), 0, 2));
+                    $joinAlias = $this->configObject->getUniqueAlias($filter->getName());
+
+                    $filter->setAs($joinAlias);
                 }
 
-                $filter->setAs($joinAlias);
                 $filter->update($this);
+                $filter->setAs(null); //TODO: Find a better way to pass the alias
 
                 //Handle additional filter inside
                 $filterValue = $filter->getValue();

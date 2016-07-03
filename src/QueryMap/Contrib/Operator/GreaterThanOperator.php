@@ -52,7 +52,7 @@ class GreaterThanOperator extends Operator
         /** @var \Doctrine\ORM\QueryBuilder $query */
         $query = $adapter->getQuery();
 
-        $paramName = $name.'#'.$this->getName();
+        $paramName = $alias.'#'.$name.'#'.$this->getName();
 
         $query->andWhere("{$alias}.{$name} > :{$paramName}")
             ->setParameter($paramName, $value);
